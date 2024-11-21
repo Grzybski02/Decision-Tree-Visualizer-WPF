@@ -8,17 +8,19 @@
         xmlns:local="clr-namespace:Decision_Trees_Visualizer"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10">
             <ComboBox Name="formatSelector" Width="200" Margin="5">
                 <ComboBoxItem>Python - Graphviz (.log)</ComboBoxItem>
                 <ComboBoxItem>MLPDT (.txt)</ComboBoxItem>
             </ComboBox>
-            <Button Content="Load and Render" Name="loadButton" Click="LoadButton_Click" Width="150" Margin="5"/>
+            <Button Content="Choose tree" Name="loadButton" Click="LoadButton_Click" Width="150" Margin="5"/>
         </StackPanel>
 
         <Grid>
             <wfi:WindowsFormsHost Name="graphHost" />
         </Grid>
     </DockPanel>
+    
 </Window>
