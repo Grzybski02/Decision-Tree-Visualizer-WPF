@@ -1,0 +1,41 @@
+﻿<Window x:Class="Decision_Trees_Visualizer.EditNodeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        Title="Edit Node" Height="200" Width="300" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>    
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Label Editing -->
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <Label Content="Label:" Width="50"/>
+            <TextBox Name="LabelTextBox" Width="200"
+                     Text="{Binding Node.Label, UpdateSourceTrigger=PropertyChanged}"/>
+
+        </StackPanel>
+
+        <!-- Color Selection -->
+        <StackPanel Orientation="Horizontal" Grid.Row="2"
+                    Visibility="{Binding Node.IsClassLeaf, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Label Content="Color:" Width="50"/>
+            <ComboBox Name="ColorComboBox" Width="200"
+                      ItemsSource="{Binding ColorNames}"
+                      SelectedItem="{Binding Node.ColorName, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="4">
+            <Button Content="OK" Width="60" Margin="5" Click="OkButton_Click"/>
+            <Button Content="Cancel" Width="60" Margin="5" Click="CancelButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
