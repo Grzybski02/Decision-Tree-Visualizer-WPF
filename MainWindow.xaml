@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:Decision_Trees_Visualizer"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    
+
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10">
             <ComboBox Name="formatSelector" Width="200" Margin="5">
@@ -19,8 +19,41 @@
         </StackPanel>
 
         <Grid>
-            <wfi:WindowsFormsHost Name="graphHost" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <!-- Miejsce na wizualizację drzewa -->
+                <ColumnDefinition Width="2*"/>
+                <!-- Miejsce na tabelę -->
+            </Grid.ColumnDefinitions>
+
+            <wfi:WindowsFormsHost Name="graphHost" Grid.Column="0" />
+
+            <DataGrid Name="NodeGrid" Grid.Column="1" AutoGenerateColumns="False" 
+          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False" 
+          ItemsSource="{Binding Nodes}" Margin="10"
+          CellEditEnding="NodeGrid_CellEditEnding">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Label" Binding="{Binding Label}" />
+                    <DataGridTextColumn Header="Color" Binding="{Binding ColorName}">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="IsEnabled" Value="{Binding IsClassLeaf}" />
+                                <Setter Property="Foreground" Value="Black" />
+                                <Setter Property="Background" Value="White" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsClassLeaf}" Value="False">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Foreground" Value="Transparent" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+
         </Grid>
     </DockPanel>
-    
 </Window>

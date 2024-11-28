@@ -1,5 +1,6 @@
 ﻿using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -20,13 +21,16 @@ namespace Decision_Trees_Visualizer;
 /// </summary>
 public partial class MainWindow : Window
 {
-    GViewer gViewer;
+    private ObservableCollection<Node> Nodes { get; set; }
+    private GrapherSKL grapher;
+    private GViewer gViewer;
+
     public MainWindow()
     {
         InitializeComponent();
-        GrapherSKL grapher = new GrapherSKL();
-
-        graphHost.Child = gViewer;
+        grapher = new GrapherSKL();
+        Nodes = new ObservableCollection<Node>();
+        NodeGrid.ItemsSource = Nodes;
     }
 
     private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -38,27 +42,24 @@ public partial class MainWindow : Window
             return;
         }
 
-        GrapherSKL grapher = new GrapherSKL();
-        GViewer gViewer = null;
-        string filePath;
-
-        switch (selectedFormat)
+        string filePath = selectedFormat switch
         {
-            case 0:
-                filePath = SelectFileWithExtension("Log files (*.log)|*.log");
-                if (filePath == null) return;
-                gViewer = grapher.RenderDecisionTree(filePath, GrapherSKL.TreeFormat.Graphviz);
-                break;
-            case 1:
-                filePath = SelectFileWithExtension("Text files (*.txt)|*.txt");
-                if (filePath == null) return;
-                gViewer = grapher.RenderDecisionTree(filePath, GrapherSKL.TreeFormat.MLPDT);
-                break;
-            default:
-                System.Windows.MessageBox.Show("Invalid format selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+            0 => SelectFileWithExtension("Log files (*.log)|*.log"),
+            1 => SelectFileWithExtension("Text files (*.txt)|*.txt"),
+            _ => null
+        };
+
+        if (filePath == null) return;
+
+        var nodes = grapher.ParseTree(File.ReadAllLines(filePath), selectedFormat == 0 ? "Graphviz" : "MLPDT");
+        Nodes.Clear();
+        foreach (var node in nodes)
+        {
+            node.ColorName = "White"; // Domyślny kolor dla wszystkich węzłów
+            Nodes.Add(node);
         }
 
+        gViewer = grapher.RenderDecisionTree(filePath, (GrapherSKL.TreeFormat)selectedFormat);
         graphHost.Child = gViewer;
     }
 
@@ -68,11 +69,38 @@ public partial class MainWindow : Window
         openFileDialog.Filter = filter;
         openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
 
-        if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-        {
-            return openFileDialog.FileName;
-        }
-
-        return null;
+        return openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK ? openFileDialog.FileName : null;
     }
+
+    private void NodeGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+{
+    var editedNode = e.Row.Item as Node;
+    if (editedNode == null) return;
+
+    if (e.Column.Header.ToString() == "Color" && editedNode.IsClassLeaf)
+    {
+        // Aktualizacja koloru w grafie
+        var graphNode = gViewer.Graph.FindNode(editedNode.Id);
+        if (graphNode != null)
+        {
+            graphNode.Attr.FillColor = new ColorList().GetColorByName(editedNode.ColorName);
+        }
+    }
+
+    if (e.Column.Header.ToString() == "Label")
+    {
+        // Aktualizacja etykiety w grafie
+        var graphNode = gViewer.Graph.FindNode(editedNode.Id);
+        if (graphNode != null)
+        {
+            graphNode.LabelText = editedNode.Label;
+        }
+    }
+
+    // Odśwież graf
+    gViewer.Graph = gViewer.Graph;
+}
+
+
+
 }

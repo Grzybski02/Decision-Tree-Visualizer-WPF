@@ -15,7 +15,7 @@ using static System.Net.Mime.MediaTypeNames;
 namespace Decision_Trees_Visualizer;
 internal class GrapherSKL
 {
-    public enum TreeFormat { MLPDT, Graphviz }
+    public enum TreeFormat { Graphviz, MLPDT }
     private int nodeCounter = 0;
     private readonly string nodeIdPrefix = "Node";
     private List<Color> colorPalette;
@@ -58,7 +58,7 @@ internal class GrapherSKL
         {
             // Węzeł liścia
             var classLabel = trimmedLine.Substring(trimmedLine.IndexOf("class:")).Trim();
-            var leafNode = new Node { Id = GetNextNodeId(), Label = classLabel };
+            var leafNode = new Node { Id = GetNextNodeId(), Label = classLabel, IsClassLeaf=true };
 
             AddNodeToTree(nodes, levelIndexes, depth, leafNode, null);
         }
@@ -83,7 +83,7 @@ internal class GrapherSKL
             var leafParts = trimmedLine.Split(':');
             var label = leafParts[1].Trim();
             var test = ExtractCondition(leafParts[0].Replace('|', ' ').Trim());
-            var leafNode = new Node { Id = GetNextNodeId(), Label = label };
+            var leafNode = new Node { Id = GetNextNodeId(), Label = label, IsClassLeaf = true };
 
             AddNodeToTree(nodes, levelIndexes, depth, leafNode, test);
             MoveLabel(leafParts[0].Replace('|', ' ').Trim(), nodes);
@@ -191,67 +191,71 @@ internal class GrapherSKL
 
         if (currentNode.LeftChildIndex.HasValue)
         {
-            var leftEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.LeftChildIndex.Value].Id);
-            leftEdge.LabelText = currentNode.LeftEdgeLabel;
-            AddNodesToGraph(graph, nodes, currentNode.LeftChildIndex.Value);
+            var leftEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.RightChildIndex.Value].Id);
+            leftEdge.LabelText = currentNode.RightEdgeLabel;
+            AddNodesToGraph(graph, nodes, currentNode.RightChildIndex.Value);
         }
 
         if (currentNode.RightChildIndex.HasValue)
         {
-            var rightEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.RightChildIndex.Value].Id);
-            rightEdge.LabelText = currentNode.RightEdgeLabel;
-            AddNodesToGraph(graph, nodes, currentNode.RightChildIndex.Value);
+            var rightEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.LeftChildIndex.Value].Id);
+            rightEdge.LabelText = currentNode.LeftEdgeLabel;
+            AddNodesToGraph(graph, nodes, currentNode.LeftChildIndex.Value);
         }
     }
 
 
 
 
-    private void ColourGraph(Graph graph)
+    public void ColourGraph(Graph graph, List<Node> nodes)
     {
-        ColorList tmp = new ColorList();
-        colorPalette = tmp.colorPalette;
+        ColorList colorList = new ColorList();
         var classesToColour = new Dictionary<string, Color>();
-        int colorIndex = int.Parse(Random.Shared.NextInt64(colorPalette.Count+1).ToString());
 
         foreach (var node in graph.Nodes)
         {
             string nodeLabel = node.LabelText;
+            string className = null;
 
+            // Sprawdzenie, czy węzeł jest liściem klasy
             if (nodeLabel.StartsWith("class:"))
             {
-                var className = nodeLabel.Substring(6).Trim();
-
-                if (!classesToColour.ContainsKey(className))
-                {
-                    var assignedColor = colorPalette[colorIndex % colorPalette.Count];
-                    colorPalette.Remove(assignedColor);
-                    classesToColour[className] = assignedColor;
-
-                    colorIndex++;
-                }
-
-                node.Attr.FillColor = classesToColour[className];
+                className = nodeLabel.Substring(6).Trim();
             }
-
             else if (nodeLabel.Contains("("))
             {
-                var className = nodeLabel.Substring(nodeLabel.IndexOf("(")+1,nodeLabel.IndexOf(")")-nodeLabel.IndexOf("(")-1);
+                int startIndex = nodeLabel.IndexOf("(") + 1;
+                int length = nodeLabel.IndexOf(")") - startIndex;
+                className = nodeLabel.Substring(startIndex, length);
+            }
 
+            if (className != null)
+            {
+                // Przypisanie koloru dla klasy
                 if (!classesToColour.ContainsKey(className))
                 {
-                    var assignedColor = colorPalette[colorIndex % colorPalette.Count];
-                    colorPalette.Remove(assignedColor);
+                    var assignedColor = colorList.GetColorForClass(className);
                     classesToColour[className] = assignedColor;
-
-                    colorIndex++;
                 }
 
+                // Ustawienie koloru w grafie
                 node.Attr.FillColor = classesToColour[className];
+
+                // Aktualizacja tabeli
+                var correspondingNode = nodes.FirstOrDefault(n => n.Id == node.Id);
+                if (correspondingNode != null)
+                {
+                    correspondingNode.ColorName = classesToColour[className].ToString();
+                }
             }
         }
-
     }
+
+
+
+
+
+
 
     public GViewer RenderDecisionTree(string filePath, TreeFormat format)
     {
@@ -261,7 +265,7 @@ internal class GrapherSKL
         var nodes = ParseTree(treeLogLines, format == TreeFormat.Graphviz ? "Graphviz" : "MLPDT");
 
         AddNodesToGraph(graph, nodes, 0); // Startujemy od korzenia na indeksie 0
-        ColourGraph(graph);
+        ColourGraph(graph,nodes);
 
         // gviewer.ToolBarIsVisible = false;
         return new GViewer { Graph = graph };

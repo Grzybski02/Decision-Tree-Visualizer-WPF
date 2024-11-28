@@ -5,66 +5,59 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Decision_Trees_Visualizer
+namespace Decision_Trees_Visualizer;
+internal class ColorList
 {
-    internal class ColorList
+    private List<string> colorNames;
+
+    public ColorList()
     {
-        internal List<Color> colorPalette = new List<Color>
+        colorNames = GetPredefinedColorNames();
+    }
+
+    private List<string> GetPredefinedColorNames()
+    {
+        return new List<string>
         {
-            Color.AliceBlue,
-            Color.AntiqueWhite,
-            Color.Aqua,
-            Color.Aquamarine,
-            Color.Azure,
-            Color.Beige,
-            Color.Bisque,
-            Color.BlanchedAlmond,
-            Color.Blue,
-            Color.BlueViolet,
-            Color.Brown,
-            Color.BurlyWood,
-            Color.CadetBlue,
-            Color.Chartreuse,
-            Color.Chocolate,
-            Color.Coral,
-            Color.CornflowerBlue,
-            Color.Cornsilk,
-            Color.Crimson,
-            Color.Cyan,
-            Color.DarkBlue,
-            Color.DarkCyan,
-            Color.DarkGoldenrod,
-            Color.DarkGray,
-            Color.DarkGreen,
-            Color.DarkKhaki,
-            Color.DarkMagenta,
-            Color.DarkOliveGreen,
-            Color.DarkOrange,
-            Color.DarkOrchid,
-            Color.DarkRed,
-            Color.DarkSalmon,
-            Color.DarkSeaGreen,
-            Color.DarkSlateBlue,
-            Color.DarkSlateGray,
-            Color.DarkTurquoise,
-            Color.DarkViolet,
-            Color.DeepPink,
-            Color.DeepSkyBlue,
-            Color.DimGray,
-            Color.DodgerBlue,
-            Color.Firebrick,
-            Color.FloralWhite,
-            Color.ForestGreen,
-            Color.Fuchsia,
-            Color.Gainsboro,
-            Color.GhostWhite,
-            Color.Gold,
-            Color.Goldenrod,
-            Color.Gray,
-            Color.Green,
-            Color.GreenYellow,
-            Color.Honeydew,
-            Color.HotPink
+            "Aquamarine", "Beige","CadetBlue", "Coral","CornflowerBlue", 
+            "DarkCyan", "DarkGray", "DarkKhaki","DarkOliveGreen", 
+            "DarkRed", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise", "DimGray", "DodgerBlue", "Firebrick", 
+            "ForestGreen", "GreenYellow","HotPink",
+            "LemonChiffon", "LightBlue", "LightGoldenrodYellow", "LightGreen", "LightPink",
+            "LightSeaGreen", "LightSkyBlue", "LightSlateGray",
+            "LightSteelBlue", "LimeGreen", "Maroon", "MediumAquamarine", "MediumOrchid",
+            "MediumPurple", "MediumSeaGreen", "MediumSlateBlue", "MediumSpringGreen",
+            "MediumTurquoise", "MistyRose", "Moccasin", "PaleGoldenrod",
+            "PaleGreen", "PaleTurquoise", "PaleVioletRed", "PapayaWhip",
+            "PeachPuff", "Peru", "Pink", "Plum", "PowderBlue", "RosyBrown", "Salmon", "SandyBrown",
+            "SeaGreen", "Silver", "SkyBlue", "SlateBlue",
+            "SpringGreen", "SteelBlue", "Tan", "Teal",
+            "Thistle", "Tomato", "Turquoise", "Violet", "Wheat", "YellowGreen"
         };
     }
+
+    public Color GetColorByName(string colorName)
+    {
+        // Używamy refleksji, aby uzyskać statyczną właściwość Color o nazwie colorName
+        var colorProperty = typeof(Color).GetProperty(colorName);
+        if (colorProperty != null)
+        {
+            return (Color)colorProperty.GetValue(null);
+        }
+        else
+        {
+            // Jeśli kolor nie istnieje, zwróć domyślny kolor (np. Czarny)
+            return Color.PaleTurquoise;
+        }
+    }
+
+    public Color GetColorForClass(string className)
+    {
+        int hash = className.GetHashCode();
+        hash = Math.Abs(hash);
+        int colorIndex = hash % colorNames.Count;
+        string colorName = colorNames[colorIndex];
+        return GetColorByName(colorName);
+    }
 }
+
