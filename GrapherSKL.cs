@@ -2,6 +2,7 @@
 using Microsoft.Msagl.GraphViewerGdi;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,7 @@ internal class GrapherSKL
     public enum TreeFormat { MLPDT, Graphviz }
     private int nodeCounter = 0;
     private readonly string nodeIdPrefix = "Node";
+    private List<Color> colorPalette;
 
     public List<Node> ParseTree(string[] logLines, string format)
     {
@@ -207,22 +209,10 @@ internal class GrapherSKL
 
     private void ColourGraph(Graph graph)
     {
-        var colorPalette = new List<Color>
-        {
-            Color.Red,
-            Color.Green,
-            Color.Blue,
-            Color.Orange,
-            Color.Purple,
-            Color.Yellow,
-            Color.Magenta,
-            Color.Cyan,
-            Color.Brown,
-            Color.Gray
-        };
-
+        ColorList tmp = new ColorList();
+        colorPalette = tmp.colorPalette;
         var classesToColour = new Dictionary<string, Color>();
-        int colorIndex = int.Parse(Random.Shared.NextInt64(10).ToString());
+        int colorIndex = int.Parse(Random.Shared.NextInt64(colorPalette.Count+1).ToString());
 
         foreach (var node in graph.Nodes)
         {
@@ -235,6 +225,7 @@ internal class GrapherSKL
                 if (!classesToColour.ContainsKey(className))
                 {
                     var assignedColor = colorPalette[colorIndex % colorPalette.Count];
+                    colorPalette.Remove(assignedColor);
                     classesToColour[className] = assignedColor;
 
                     colorIndex++;
@@ -245,11 +236,12 @@ internal class GrapherSKL
 
             else if (nodeLabel.Contains("("))
             {
-                var className = nodeLabel.Substring(nodeLabel.IndexOf("("),nodeLabel.IndexOf(")")- nodeLabel.IndexOf("("));
+                var className = nodeLabel.Substring(nodeLabel.IndexOf("(")+1,nodeLabel.IndexOf(")")-nodeLabel.IndexOf("(")-1);
 
                 if (!classesToColour.ContainsKey(className))
                 {
                     var assignedColor = colorPalette[colorIndex % colorPalette.Count];
+                    colorPalette.Remove(assignedColor);
                     classesToColour[className] = assignedColor;
 
                     colorIndex++;
