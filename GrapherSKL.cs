@@ -242,6 +242,9 @@ internal class GrapherSKL
                 var (color, colorName) = classesToColour[className];
                 node.Attr.FillColor = color;
 
+                // Ustawienie kształtu na elipsę
+                node.Attr.Shape = Shape.Ellipse;
+
                 // Aktualizacja tabeli
                 var correspondingNode = nodes.FirstOrDefault(n => n.Id == node.Id);
                 if (correspondingNode != null)
@@ -249,8 +252,14 @@ internal class GrapherSKL
                     correspondingNode.ColorName = colorName;
                 }
             }
+            else
+            {
+                // Opcjonalnie, ustaw kształt dla innych węzłów
+                node.Attr.Shape = Shape.Box; // Możesz zmienić na inny kształt, jeśli chcesz
+            }
         }
     }
+
 
 
 

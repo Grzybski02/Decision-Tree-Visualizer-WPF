@@ -18,10 +18,14 @@ public class Node : INotifyPropertyChanged
         get => label;
         set
         {
-            label = value;
-            OnPropertyChanged(nameof(Label));
+            if (label != value)
+            {
+                label = value;
+                OnPropertyChanged(nameof(Label));
+            }
         }
     }
+
 
     private string colorName;
     public string ColorName
@@ -29,8 +33,11 @@ public class Node : INotifyPropertyChanged
         get => colorName;
         set
         {
-            colorName = value;
-            OnPropertyChanged(nameof(ColorName));
+            if (colorName != value)
+            {
+                colorName = value;
+                OnPropertyChanged(nameof(ColorName));
+            }
         }
     }
 
