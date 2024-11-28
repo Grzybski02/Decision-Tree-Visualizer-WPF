@@ -15,7 +15,7 @@ internal class ColorList
         colorNames = GetPredefinedColorNames();
     }
 
-    private List<string> GetPredefinedColorNames()
+    internal List<string> GetPredefinedColorNames()
     {
         return new List<string>
         {
@@ -51,13 +51,15 @@ internal class ColorList
         }
     }
 
-    public Color GetColorForClass(string className)
+    public (Color color, string colorName) GetColorForClass(string className)
     {
         int hash = className.GetHashCode();
         hash = Math.Abs(hash);
         int colorIndex = hash % colorNames.Count;
         string colorName = colorNames[colorIndex];
-        return GetColorByName(colorName);
+        Color color = GetColorByName(colorName);
+        return (color, colorName);
     }
+
 }
 

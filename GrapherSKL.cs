@@ -210,7 +210,7 @@ internal class GrapherSKL
     public void ColourGraph(Graph graph, List<Node> nodes)
     {
         ColorList colorList = new ColorList();
-        var classesToColour = new Dictionary<string, Color>();
+        var classesToColour = new Dictionary<string, (Color color, string colorName)>();
 
         foreach (var node in graph.Nodes)
         {
@@ -234,18 +234,19 @@ internal class GrapherSKL
                 // Przypisanie koloru dla klasy
                 if (!classesToColour.ContainsKey(className))
                 {
-                    var assignedColor = colorList.GetColorForClass(className);
-                    classesToColour[className] = assignedColor;
+                    var (assignedColor, colorLabel) = colorList.GetColorForClass(className);
+                    classesToColour[className] = (assignedColor, colorLabel);
                 }
 
                 // Ustawienie koloru w grafie
-                node.Attr.FillColor = classesToColour[className];
+                var (color, colorName) = classesToColour[className];
+                node.Attr.FillColor = color;
 
                 // Aktualizacja tabeli
                 var correspondingNode = nodes.FirstOrDefault(n => n.Id == node.Id);
                 if (correspondingNode != null)
                 {
-                    correspondingNode.ColorName = classesToColour[className].ToString();
+                    correspondingNode.ColorName = colorName;
                 }
             }
         }
@@ -257,19 +258,20 @@ internal class GrapherSKL
 
 
 
-    public GViewer RenderDecisionTree(string filePath, TreeFormat format)
+
+    public GViewer RenderDecisionTree(List<Node> Nodes)
     {
-        string[] treeLogLines = File.ReadAllLines(filePath);
         Graph graph = new Graph("Decision Tree");
 
-        var nodes = ParseTree(treeLogLines, format == TreeFormat.Graphviz ? "Graphviz" : "MLPDT");
 
-        AddNodesToGraph(graph, nodes, 0); // Startujemy od korzenia na indeksie 0
-        ColourGraph(graph,nodes);
+        AddNodesToGraph(graph, Nodes, 0); // Startujemy od korzenia na indeksie 0
+        ColourGraph(graph,Nodes);
 
         // gviewer.ToolBarIsVisible = false;
         return new GViewer { Graph = graph };
     }
+
+
 
 
 

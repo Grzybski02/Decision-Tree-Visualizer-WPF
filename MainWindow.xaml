@@ -21,22 +21,20 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
-                <!-- Miejsce na wizualizację drzewa -->
                 <ColumnDefinition Width="2*"/>
-                <!-- Miejsce na tabelę -->
             </Grid.ColumnDefinitions>
 
             <wfi:WindowsFormsHost Name="graphHost" Grid.Column="0" />
 
-            <DataGrid Name="NodeGrid" Grid.Column="1" AutoGenerateColumns="False" 
-          CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False" 
-          ItemsSource="{Binding Nodes}" Margin="10"
-          CellEditEnding="NodeGrid_CellEditEnding">
+            <DataGrid Name="NodeGrid" Grid.Column="1" AutoGenerateColumns="False"
+                      CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False"
+                      ItemsSource="{Binding Nodes, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Margin="10"
+                      CellEditEnding="NodeGrid_CellEditEnding">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Label" Binding="{Binding Label}" />
-                    <DataGridTextColumn Header="Color" Binding="{Binding ColorName}">
-                        <DataGridTextColumn.CellStyle>
+                    <DataGridComboBoxColumn Header="Color" SelectedItemBinding="{Binding ColorName}" IsReadOnly="False">
+                        <DataGridComboBoxColumn.CellStyle>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="IsEnabled" Value="{Binding IsClassLeaf}" />
                                 <Setter Property="Foreground" Value="Black" />
@@ -48,8 +46,8 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </DataGridTextColumn.CellStyle>
-                    </DataGridTextColumn>
+                        </DataGridComboBoxColumn.CellStyle>
+                    </DataGridComboBoxColumn>
                 </DataGrid.Columns>
             </DataGrid>
 

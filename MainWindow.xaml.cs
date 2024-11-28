@@ -25,12 +25,25 @@ public partial class MainWindow : Window
     private GrapherSKL grapher;
     private GViewer gViewer;
 
+    // Zmień na właściwość
+    public List<string> ColorNames { get; set; }
+
     public MainWindow()
     {
         InitializeComponent();
+        DataContext = this; // Ustawienie DataContext
+
         grapher = new GrapherSKL();
         Nodes = new ObservableCollection<Node>();
         NodeGrid.ItemsSource = Nodes;
+
+        // Inicjalizacja ColorNames za pomocą publicznej metody
+        ColorNames = new ColorList().GetPredefinedColorNames();
+        var colorColumn = NodeGrid.Columns.OfType<DataGridComboBoxColumn>().FirstOrDefault(c => c.Header.ToString() == "Color");
+        if (colorColumn != null)
+        {
+            colorColumn.ItemsSource = ColorNames;
+        }
     }
 
     private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -59,7 +72,7 @@ public partial class MainWindow : Window
             Nodes.Add(node);
         }
 
-        gViewer = grapher.RenderDecisionTree(filePath, (GrapherSKL.TreeFormat)selectedFormat);
+        gViewer = grapher.RenderDecisionTree(nodes);
         graphHost.Child = gViewer;
     }
 
@@ -73,34 +86,41 @@ public partial class MainWindow : Window
     }
 
     private void NodeGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-{
-    var editedNode = e.Row.Item as Node;
-    if (editedNode == null) return;
-
-    if (e.Column.Header.ToString() == "Color" && editedNode.IsClassLeaf)
     {
-        // Aktualizacja koloru w grafie
-        var graphNode = gViewer.Graph.FindNode(editedNode.Id);
-        if (graphNode != null)
+        if (e.EditAction == DataGridEditAction.Commit)
         {
-            graphNode.Attr.FillColor = new ColorList().GetColorByName(editedNode.ColorName);
+            // Defer the update until after the edit is committed
+            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() =>
+            {
+                UpdateGraphNode(e);
+            }));
         }
     }
 
-    if (e.Column.Header.ToString() == "Label")
+    private void UpdateGraphNode(DataGridCellEditEndingEventArgs e)
     {
-        // Aktualizacja etykiety w grafie
-        var graphNode = gViewer.Graph.FindNode(editedNode.Id);
-        if (graphNode != null)
+        var editedNode = e.Row.Item as Node;
+        if (editedNode == null) return;
+
+        if (e.Column.Header.ToString() == "Color" && editedNode.IsClassLeaf)
         {
-            graphNode.LabelText = editedNode.Label;
+            var graphNode = gViewer.Graph.FindNode(editedNode.Id);
+            if (graphNode != null)
+            {
+                graphNode.Attr.FillColor = new ColorList().GetColorByName(editedNode.ColorName);
+            }
         }
+
+        if (e.Column.Header.ToString() == "Label")
+        {
+            var graphNode = gViewer.Graph.FindNode(editedNode.Id);
+            if (graphNode != null)
+            {
+                graphNode.LabelText = editedNode.Label;
+            }
+        }
+
+        // Refresh the graph to reflect changes
+        gViewer.Refresh();
     }
-
-    // Odśwież graf
-    gViewer.Graph = gViewer.Graph;
-}
-
-
-
 }
