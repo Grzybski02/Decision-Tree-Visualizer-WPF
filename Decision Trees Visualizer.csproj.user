@@ -10,9 +10,15 @@
     <Compile Update="EditNodeWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="FormatSelectionDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="EditNodeWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="FormatSelectionDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">

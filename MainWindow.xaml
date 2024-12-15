@@ -8,27 +8,43 @@
         xmlns:local="clr-namespace:Decision_Trees_Visualizer"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.InputBindings>
+        <KeyBinding Key="L" Modifiers="Control" Command="{Binding LoadTreeCommand}"/>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding ExportTreeCommand}"/>
+        <KeyBinding Key="I" Modifiers="Control" Command="{Binding ToggleNodeGridCommand}"/>
+        <KeyBinding Key="H" Modifiers="Control" Command="{Binding AboutCommand}"/>
+    </Window.InputBindings>
 
     <DockPanel>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="10">
-            <ComboBox Name="formatSelector" Width="200" Margin="5">
-                <ComboBoxItem>Python - Graphviz (.log)</ComboBoxItem>
-                <ComboBoxItem>MLPDT (.txt)</ComboBoxItem>
-                <ComboBoxItem>DTV (.json)</ComboBoxItem>
-            </ComboBox>
-            <Button Content="Choose tree" Name="loadButton" Click="LoadButton_Click" Width="150" Margin="5"/>
-            <Button Content="Export to JSON" Name="exportJsonButton" Click="ExportJsonButton_Click" Width="150" Margin="5" />
-        </StackPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Load Tree" InputGestureText="Ctrl+L" Click="LoadMenuItem_Click"/>
+                <MenuItem Header="Export" InputGestureText="Ctrl+S" Click="ExportJsonMenuItem_Click"/>
+                <Separator/>
+                <MenuItem Header="Recent Files">
+                    <MenuItem Name="RecentFilesMenu" Header="(None)" IsEnabled="False"/>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="Close" Click="ExitMenuItem_Click"/>
+            </MenuItem>
+            <MenuItem Header="View">
+                <MenuItem Header="Show/Hide Node Grid" InputGestureText="Ctrl+I" Click="ToggleNodeGridMenuItem_Click"/>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About" InputGestureText="Ctrl+H" Click="AboutMenuItem_Click"/>
+            </MenuItem>
+        </Menu>
 
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
             <wfi:WindowsFormsHost Name="graphHost" Grid.Column="0" />
 
-            <DataGrid Name="NodeGrid" Grid.Column="1" AutoGenerateColumns="False" 
+            <DataGrid Name="NodeGrid" Grid.Column="2" AutoGenerateColumns="False" 
                       CanUserSortColumns="True" CanUserResizeColumns="True" CanUserReorderColumns="True"
                       CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False"
                       ItemsSource="{Binding Nodes, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
