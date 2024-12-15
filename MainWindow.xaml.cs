@@ -2,6 +2,7 @@
 using Microsoft.Msagl.GraphViewerGdi;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -38,8 +39,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             }
         }
     }
-
-
 
     private bool IsNodeGridVisible = true;
     private Visibility _nodeGridVisibility = Visibility.Visible;
@@ -128,8 +127,21 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var result = fileService.ShowOpenFileDialog();
         if (result == null) return;
 
-        var format = fileService.SelectFormatDialog();
-        if (format == null) return;
+        string format = Path.GetExtension(result).Substring(1).ToUpper();
+        switch (format)
+        {
+            case "LOG":
+                format = "Graphviz";
+                break;
+            case "TXT":
+                format = "MLPDT";
+                break;
+            case "JSON":
+                break;
+            default:
+                System.Windows.MessageBox.Show("Unsupported file format.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+        }
 
         var nodes = fileService.LoadFile(result, format);
         if (nodes == null || nodes.Count == 0)
@@ -151,6 +163,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         // Dodaj do ostatnich plików
         fileService.AddToRecentFiles(result, format);
+        Toolbar.Visibility = Visibility.Visible;
     }
 
     private void ExportToJson()
@@ -191,8 +204,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
             // Przywróć rozmiary
             var grid = (Grid)graphHost.Parent;
-            grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
-            grid.ColumnDefinitions[2].Width = new GridLength(1, GridUnitType.Star);
+            grid.ColumnDefinitions[0].Width = new GridLength(4, GridUnitType.Star);
+            grid.ColumnDefinitions[2].Width = new GridLength(2, GridUnitType.Star);
         }
     }
 
@@ -334,6 +347,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
         else
         {
+            if (gViewer.Graph == null) return;
             gViewer.PanButtonPressed = true;
             PanIcon.IsChecked = true;
 
@@ -355,6 +369,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
         else
         {
+            if (gViewer.Graph == null) return;
             gViewer.WindowZoomButtonPressed = true;
             RectangleIcon.IsChecked = true;
 

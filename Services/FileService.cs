@@ -12,6 +12,10 @@ public class FileService
 
     public string ShowOpenFileDialog()
     {
+        System.Windows.MessageBox.Show("Supported formats:" +
+                                       "\n.log - Graphviz with feature names, class names and proportion;" +
+                                       "\n.txt - MLPDT format;" +
+                                       "\n.json - own JSON format");
         var openFileDialog = new System.Windows.Forms.OpenFileDialog
         {
             Filter = "All Supported Files (*.log;*.txt;*.json)|*.log;*.txt;*.json|Log files (*.log)|*.log|Text files (*.txt)|*.txt|JSON files (*.json)|*.json",
@@ -38,14 +42,6 @@ public class FileService
         };
 
         return saveFileDialog.ShowDialog() == DialogResult.OK ? saveFileDialog.FileName : null;
-    }
-
-    public string SelectFormatDialog()
-    {
-        var formatDialog = new FormatSelectionDialog();
-        if (formatDialog.ShowDialog() == true)
-            return formatDialog.SelectedFormat;
-        return null;
     }
 
     public List<Node> LoadFile(string filePath, string format)

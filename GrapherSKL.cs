@@ -2,6 +2,7 @@
 using Microsoft.Msagl.GraphViewerGdi;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Windows.Shapes;
 
 namespace Decision_Trees_Visualizer;
 internal class GrapherSKL
@@ -341,29 +342,25 @@ internal class GrapherSKL
         {
             string nodeLabel = node.LabelText;
             string[] lines = nodeLabel.Split("\n");
+            var match = Regex.Match(nodeLabel, @"^(.*?)\s(\(\d+\/\d+\))$");
             string className = null;
 
             // Sprawdzenie, czy węzeł jest liściem klasy
             switch (selectedFormat)
             {
                 case "Graphviz":
-                    if (lines.Count() == 4)
+                    if (lines.Length == 4)
                     {
                         className = lines[3];
                     }
                     break;
 
                 default:
-                    if (nodeLabel.StartsWith("class:"))
-                    {
-                        className = nodeLabel.Substring(6).Trim();
-                    }
-                    else if (nodeLabel.Contains("("))
-                    {
-                        int startIndex = nodeLabel.IndexOf("(") + 1;
-                        int length = nodeLabel.IndexOf(")") - startIndex;
-                        className = nodeLabel.Substring(startIndex, length);
-                    }
+                    if (lines.Length == 4)
+                        className = lines[3];
+                    else if (node.OutEdges.Count() == 0 && match.Success)
+                        className = match.Groups[1].Value;
+                    
                     break;
             }
 
