@@ -460,7 +460,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             var graphNode = gViewer.Graph.FindNode(SelectedNode.Id);
             if (graphNode != null)
             {
-                graphNode.Attr.LineWidth = 5;
+                graphNode.Attr.LineWidth = 10;
                 graphNode.Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
             }
 

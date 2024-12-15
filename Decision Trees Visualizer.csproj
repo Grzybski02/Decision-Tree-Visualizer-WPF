@@ -7,6 +7,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<PublishSingleFile>true</PublishSingleFile>
+	<ApplicationIcon>ViewModels\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +20,7 @@
     <None Remove="Assets\Icons\undo.png" />
     <None Remove="Assets\Icons\zoom-in.png" />
     <None Remove="Assets\Icons\zoom-out.png" />
-	<None Remove="Assets\Icons\favicon.ico" />
+	<None Remove="Assets\Icons\icon.ico" />
     <None Remove="checkbox-unchecked.png" />
     <None Remove="compass.png" />
     <None Remove="home.png" />
@@ -25,7 +28,11 @@
     <None Remove="undo.png" />
     <None Remove="zoom-in.png" />
     <None Remove="zoom-out.png" />
-	<None Remove="favicon.ico" />
+	<None Remove="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="ViewModels\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,7 +50,7 @@
     <Resource Include="Assets\Icons\undo.png" />
     <Resource Include="Assets\Icons\zoom-in.png" />
     <Resource Include="Assets\Icons\zoom-out.png" />
-    <Resource Include="favicon.ico" />
+    <Resource Include="ViewModels\icon.ico" />
   </ItemGroup>
 
 </Project>
