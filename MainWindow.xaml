@@ -61,7 +61,7 @@
             </MenuItem>
         </Menu>
 
-        <ToolBarTray DockPanel.Dock="Top" Background="White" Height="30">
+        <ToolBarTray x:Name="Toolbar" DockPanel.Dock="Top" Background="White" Height="30" Visibility="Collapsed">
             <ToolBar Background="White" AllowDrop="False" IsOverflowOpen="False">
                 <Button Click="FitToScreen_Click" ToolBar.OverflowMode="Never">
                     <Image Source="/Assets/Icons/home.png" Width="24" Height="24" />
@@ -111,7 +111,7 @@
                       ItemsSource="{Binding Nodes, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                       Visibility="{Binding NodeGridVisibility}" 
                       SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
-                      SelectionChanged="NodeGrid_SelectionChanged">
+                      SelectionChanged="NodeGrid_SelectionChanged" >
 
                 <DataGrid.Resources>
                     <Style TargetType="DataGridRow">
