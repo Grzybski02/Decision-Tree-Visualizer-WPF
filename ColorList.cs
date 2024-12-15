@@ -55,7 +55,7 @@ internal class ColorList
     {
         int hash = className.GetHashCode();
         hash = Math.Abs(hash);
-        int colorIndex = hash % colorNames.Count;
+        int colorIndex = (int)Random.Shared.NextInt64(hash % colorNames.Count, colorNames.Count);
         string colorName = colorNames[colorIndex];
         Color color = GetColorByName(colorName);
         return (color, colorName);
