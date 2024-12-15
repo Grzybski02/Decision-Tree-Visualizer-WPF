@@ -69,6 +69,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             ToolBarIsVisible = false
         };
+
+        gViewer.MouseDown += GViewer_MouseDown;
         Nodes = new ObservableCollection<Node>();
         Nodes.CollectionChanged += nodeGraphManager.Nodes_CollectionChanged;
         nodeGraphManager.Initialize(Nodes, graphHost, gViewer); // Przekazujemy referencje do zarządzania grafem
@@ -121,8 +123,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         ToggleNodeGridVisibility();
     }
-
-
 
     private void LoadTree()
     {
@@ -230,7 +230,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-
     private void UpdateRecentFilesMenu(List<(string FilePath, string Format)> recentFiles)
     {
         RecentFilesCollection.Clear();
@@ -303,7 +302,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
-
     private void ZoomIn_Click(object sender, RoutedEventArgs e)
     {
         gViewer.ZoomInPressed();
@@ -325,8 +323,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         IsPanMode = false;
         IsRectangleZoomMode = false;
     }
-
-
 
     private void Pan_Click(object sender, RoutedEventArgs e)
     {
@@ -370,8 +366,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
-
-
     private void Undo_Click(object sender, RoutedEventArgs e)
     {
         gViewer.Undo();
@@ -381,5 +375,85 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         gViewer.Redo();
     }
+
+    private Node selectedNode;
+    public Node SelectedNode
+    {
+        get => selectedNode;
+        set
+        {
+            if (selectedNode != value)
+            {
+                selectedNode = value;
+                OnPropertyChanged(nameof(SelectedNode));
+                OnSelectedNodeChanged();
+            }
+        }
+    }
+
+
+    private void GViewer_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+    {
+        // Sprawdź, który obiekt został kliknięty
+        var clickedObject = gViewer.GetObjectAt(e.Location);
+
+        if (clickedObject is Microsoft.Msagl.GraphViewerGdi.DNode graphNode)
+        {
+            // Znajdź odpowiadający węzeł w kolekcji Nodes
+            SelectedNode = Nodes.FirstOrDefault(n => n.Id == graphNode.Node.Id);
+
+            if (SelectedNode != null)
+            {
+                // Automatycznie przewiń NodeGrid do zaznaczonego wiersza
+                NodeGrid.ScrollIntoView(SelectedNode);
+            }
+        }
+    }
+
+    private void OnSelectedNodeChanged()
+    {
+        if (gViewer.Graph != null)
+        {
+            // Resetowanie stylów wszystkich węzłów
+            foreach (var node in gViewer.Graph.Nodes)
+            {
+                node.Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+                node.Attr.LineWidth = 1;
+            }
+
+            // Podświetlenie wybranego węzła
+            if (SelectedNode != null)
+            {
+                var graphNode = gViewer.Graph.FindNode(SelectedNode.Id);
+            }
+
+            gViewer.Refresh();
+        }
+    }
+
+    private void NodeGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (SelectedNode != null && gViewer.Graph != null)
+        {
+            // Resetowanie stylów wszystkich węzłów
+            foreach (var node in gViewer.Graph.Nodes)
+            {
+                node.Attr.LineWidth = 1;
+                node.Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+            }
+
+            // Podświetlenie wybranego węzła
+            var graphNode = gViewer.Graph.FindNode(SelectedNode.Id);
+            if (graphNode != null)
+            {
+                graphNode.Attr.LineWidth = 5;
+                graphNode.Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+            }
+
+            // Odświeżenie widoku grafu
+            gViewer.Refresh();
+        }
+    }
+
 
 }

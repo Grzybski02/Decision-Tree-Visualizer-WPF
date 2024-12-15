@@ -109,7 +109,21 @@
                       CanUserSortColumns="True" CanUserResizeColumns="True" CanUserReorderColumns="True"
                       CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False"
                       ItemsSource="{Binding Nodes, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                      Visibility="{Binding NodeGridVisibility}">
+                      Visibility="{Binding NodeGridVisibility}" 
+                      SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
+                      SelectionChanged="NodeGrid_SelectionChanged">
+
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="BorderThickness" Value="2"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="Foreground" Value="Gray"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Label" Binding="{Binding Label}" />
