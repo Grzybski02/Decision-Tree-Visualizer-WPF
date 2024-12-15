@@ -1,5 +1,6 @@
 ﻿using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
+using QuickGraph.Algorithms.Search;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -10,18 +11,21 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Forms.VisualStyles;
+using System.Windows.Shapes;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Decision_Trees_Visualizer;
 internal class GrapherSKL
 {
-    public enum TreeFormat { Graphviz, MLPDT }
     private int nodeCounter = 0;
+    internal string selectedFormat;
     private readonly string nodeIdPrefix = "Node";
     private List<Color> colorPalette;
 
     public List<Node> ParseTree(string[] logLines, string format, string filePath = null)
     {
+        selectedFormat = format;
         switch (format)
         {
             case "Graphviz":
@@ -39,31 +43,47 @@ internal class GrapherSKL
 
     private List<Node> ParseGraphvizTree(string[] logLines)
     {
-        if (logLines == null || logLines.Length == 0)
-            throw new ArgumentException("Input file is empty or null.", nameof(logLines));
-
         var nodes = new List<Node>();
-        var levelIndexes = new Dictionary<int, int>();
-
-        // Tworzenie korzenia
-        var rootNode = new Node
-        {
-            Id = GetNextNodeId(),
-            Label = "Root",
-            Depth = 0
-        };
-
-        AddNodeToTree(nodes, levelIndexes, 0, rootNode, null);
+        var edges = new List<(int Parent, int Child)>(); // Lista krawędzi
 
         foreach (var line in logLines)
         {
-            int depth = CountDepth(line);
-            var trimmedLine = line.TrimStart('|').Trim();
-            AddGraphvizNode(nodes, levelIndexes, depth, trimmedLine);
+            AddGraphvizNode(nodes, edges, line);
         }
+
+        // Uzupełnianie dzieci
+        foreach (var (parent, child) in edges)
+        {
+            var parentNode = nodes.First(n => n.Id == parent.ToString());
+            var childNode = nodes.First(n => n.Id == child.ToString());
+
+            // Zamiana lewej i prawej strony
+            if (parentNode.RightChildIndex == null)
+                parentNode.RightChildIndex = nodes.IndexOf(childNode); // Teraz prawe dziecko
+            else
+                parentNode.LeftChildIndex = nodes.IndexOf(childNode); // Teraz lewe dziecko
+        }
+
 
         return nodes;
     }
+
+    // Pomocnicze metody
+    private double ExtractDouble(string line) => double.Parse(Regex.Match(line, @"\d+\.\d+").Value.Replace('.',','));
+    private int ExtractInt(string line) => int.Parse(Regex.Match(line, @"\d+").Value);
+    private List<int> ExtractValueList(string line)
+    {
+        return line
+            .Split(new[] { '[', ']', ',' }, StringSplitOptions.RemoveEmptyEntries)
+            .Skip(1)
+            .Select(x => x.Replace('.', ','))  
+            .Select(x => (int)double.Parse(x)) 
+            .ToList();
+    }
+
+
+
+
 
 
     private List<Node> ParseMLPDTTree(string[] logLines)
@@ -115,26 +135,52 @@ internal class GrapherSKL
         }
     }
 
-    private void AddGraphvizNode(List<Node> nodes, Dictionary<int, int> levelIndexes, int depth, string trimmedLine)
+    private void AddGraphvizNode(List<Node> nodes, List<(int, int)> edges, string line)
     {
-        if (trimmedLine.Contains("class:"))
+        // Parsowanie węzłów
+        if (line.Contains("[label="))
         {
-            // Węzeł liścia
-            var classLabel = trimmedLine.Substring(trimmedLine.IndexOf("class:")).Trim();
-            var leafNode = new Node { Id = GetNextNodeId(), Label = classLabel, IsClassLeaf=true };
+            var match = Regex.Match(line, @"(\d+) \[label=""(.+?)""\]");
+            if (match.Success)
+            {
+                var nodeId = int.Parse(match.Groups[1].Value);
+                var label = match.Groups[2].Value;
 
-            AddNodeToTree(nodes, levelIndexes, depth, leafNode, null);
+                var node = new GraphvizNode { Id = nodeId.ToString() };
+
+                // Podział etykiety na linie (uwzględnia liście z 4 liniami)
+                var lines = label.Split(new[] { "\\n" }, StringSplitOptions.None);
+
+                if (lines.Length > 4) // Węzeł wewnętrzny
+                {
+                    node.Test = lines[0];
+                    node.Gini = ExtractDouble(lines[1]);
+                    node.Samples = ExtractInt(lines[2]);
+                    node.Value = ExtractValueList(lines[3]);
+                    node.ClassName = lines[4].Split('=')[1].Trim();
+                }
+                else // Liść
+                {
+                    node.Gini = ExtractDouble(lines[0]);
+                    node.Samples = ExtractInt(lines[1]);
+                    node.Value = ExtractValueList(lines[2]);
+                    node.ClassName = lines[3].Split('=')[1].Trim();
+                    node.IsClassLeaf = true;
+                }
+
+                nodes.Add(node);
+            }
         }
-        else
+        // Parsowanie krawędzi
+        else if (line.Contains("->"))
         {
-            // Węzeł cechy
-            var featureWithTest = trimmedLine.Split(new[] { "---" }, StringSplitOptions.None);
-            var featureName = featureWithTest[0].Trim().Split(' ')[0]; // Wyodrębnij nazwę cechy
-            var test = featureWithTest[1].Trim();
-
-            var newNode = new Node { Id = GetNextNodeId(), Label = featureName };
-
-            AddNodeToTree(nodes, levelIndexes, depth, newNode, test);
+            var edgeMatch = Regex.Match(line, @"(\d+) -> (\d+)");
+            if (edgeMatch.Success)
+            {
+                var parent = int.Parse(edgeMatch.Groups[1].Value);
+                var child = int.Parse(edgeMatch.Groups[2].Value);
+                edges.Add((parent, child));
+            }
         }
     }
 
@@ -255,43 +301,84 @@ internal class GrapherSKL
             : $"{currentNode.Label}\n{currentNode.TestInfo}";
 
 
-        // Przejście do lewego dziecka
+        // Dzieci
         if (currentNode.LeftChildIndex.HasValue)
         {
-            var leftEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.LeftChildIndex.Value].Id);
+            graph.AddEdge(currentNode.Id, nodes[currentNode.LeftChildIndex.Value].Id).LabelText = ""; // Bez etykiety
             AddNodesToGraph(graph, nodes, currentNode.LeftChildIndex.Value);
         }
 
-        // Przejście do prawego dziecka
         if (currentNode.RightChildIndex.HasValue)
         {
-            var rightEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.RightChildIndex.Value].Id);
+            graph.AddEdge(currentNode.Id, nodes[currentNode.RightChildIndex.Value].Id).LabelText = ""; // Bez etykiety
             AddNodesToGraph(graph, nodes, currentNode.RightChildIndex.Value);
         }
     }
+
+    private void AddGraphvizNodesToGraph(Graph graph, List<Node> nodes, int currentIndex)
+    {
+        if (currentIndex < 0 || currentIndex >= nodes.Count) return;
+
+        GraphvizNode currentNode = (GraphvizNode)nodes[currentIndex];
+        var graphNode = graph.AddNode(currentNode.Id);
+
+        // Formatowanie informacji w węźle
+        graphNode.LabelText = string.IsNullOrEmpty(currentNode.Test)
+            ? $"gini = {currentNode.Gini}\nsamples = {currentNode.Samples}\nvalue = [{string.Join(", ", currentNode.Value)}]\nclass = {currentNode.ClassName}"
+            : $"{currentNode.Test}\ngini = {currentNode.Gini}\nsamples = {currentNode.Samples}\nvalue = [{string.Join(", ", currentNode.Value)}]\nclass = {currentNode.ClassName}";
+
+        currentNode.Label = graphNode.LabelText;
+
+        // Dodanie dzieci
+        if (currentNode.LeftChildIndex.HasValue)
+        {
+            graph.AddEdge(currentNode.Id, nodes[currentNode.LeftChildIndex.Value].Id).LabelText = "";
+            AddGraphvizNodesToGraph(graph, nodes, currentNode.LeftChildIndex.Value);
+        }
+
+        if (currentNode.RightChildIndex.HasValue)
+        {
+            graph.AddEdge(currentNode.Id, nodes[currentNode.RightChildIndex.Value].Id).LabelText = "";
+            AddGraphvizNodesToGraph(graph, nodes, currentNode.RightChildIndex.Value);
+        }
+    }
+
+
 
     public void ColourGraph(Graph graph, List<Node> nodes)
     {
         ColorList colorList = new ColorList();
         var classesToColour = new Dictionary<string, (Color color, string colorName)>();
-
         foreach (var node in graph.Nodes)
         {
             string nodeLabel = node.LabelText;
+            string[] lines = nodeLabel.Split("\n");
             string className = null;
 
             // Sprawdzenie, czy węzeł jest liściem klasy
-            if (nodeLabel.StartsWith("class:"))
+            switch(selectedFormat)
             {
-                className = nodeLabel.Substring(6).Trim();
-            }
-            else if (nodeLabel.Contains("("))
-            {
-                int startIndex = nodeLabel.IndexOf("(") + 1;
-                int length = nodeLabel.IndexOf(")") - startIndex;
-                className = nodeLabel.Substring(startIndex, length);
-            }
+                case "Graphviz":
+                    if (lines.Count() == 4)
+                    {
+                        className = lines[3];
+                    }
+                    break;
 
+                default:
+                    if (nodeLabel.StartsWith("class:"))
+                    {
+                        className = nodeLabel.Substring(6).Trim();
+                    }
+                    else if (nodeLabel.Contains("("))
+                    {
+                        int startIndex = nodeLabel.IndexOf("(") + 1;
+                        int length = nodeLabel.IndexOf(")") - startIndex;
+                        className = nodeLabel.Substring(startIndex, length);
+                    }
+                    break;
+            }
+   
             if (className != null)
             {
                 // Przypisanie koloru dla klasy
@@ -306,7 +393,7 @@ internal class GrapherSKL
                 node.Attr.FillColor = color;
 
                 // Ustawienie kształtu na elipsę
-                node.Attr.Shape = Shape.Ellipse;
+                node.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Ellipse;
 
                 // Aktualizacja tabeli
                 var correspondingNode = nodes.FirstOrDefault(n => n.Id == node.Id);
@@ -318,17 +405,19 @@ internal class GrapherSKL
             else
             {
                 // Opcjonalnie, ustaw kształt dla innych węzłów
-                node.Attr.Shape = Shape.Box; // Możesz zmienić na inny kształt, jeśli chcesz
+                node.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Box; // Możesz zmienić na inny kształt, jeśli chcesz
             }
-        }
+        }       
     }
 
     public GViewer RenderDecisionTree(List<Node> Nodes)
     {
         Graph graph = new Graph("Decision Tree");
 
-
-        AddNodesToGraph(graph, Nodes, 0); // Startujemy od korzenia na indeksie 0
+        if (selectedFormat == "Graphviz")
+            AddGraphvizNodesToGraph(graph, Nodes, 0); // Startujemy od korzenia na indeksie 0
+        else
+            AddNodesToGraph(graph, Nodes, 0); // Startujemy od korzenia na indeksie 0
         ColourGraph(graph,Nodes);
 
         return new GViewer { Graph = graph };

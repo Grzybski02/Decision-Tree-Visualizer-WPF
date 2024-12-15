@@ -147,8 +147,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 n.ColorName = "White";
             Nodes.Add(n);
         }
-
-        nodeGraphManager.RenderGraph(Nodes.ToList());
+        
+        nodeGraphManager.RenderGraph(Nodes.ToList(), format);
 
         // Dodaj do ostatnich plików
         fileService.AddToRecentFiles(result, format);
@@ -265,7 +265,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                             Nodes.Add(n);
                         }
 
-                        nodeGraphManager.RenderGraph(Nodes.ToList());
+                        nodeGraphManager.RenderGraph(Nodes.ToList(), format);
                     })
                 };
 

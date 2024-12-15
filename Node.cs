@@ -66,6 +66,30 @@ public class Node : INotifyPropertyChanged
     }
 }
 
+public class GraphvizNode : Node
+{
+    [JsonPropertyName("left_label")]
+    public string? LeftEdgeLabel { get; set; } // Indeks lewego dziecka w liście
+
+    [JsonPropertyName("right_label")]
+    public string? RightEdgeLabel { get; set; } // Indeks prawego dziecka w liście
+
+    [JsonPropertyName("test")]
+    public string Test { get; set; }       // Test decyzyjny (np. petal length <= 2.45)
+    
+    [JsonPropertyName("gini")]
+    public double Gini { get; set; }       // Wartość Gini
+
+    [JsonPropertyName("samples")]
+    public int Samples { get; set; }       // Liczba próbek
+
+    [JsonPropertyName("value")]
+    public List<int> Value { get; set; }   // Wartości klas
+
+    [JsonPropertyName("classname")]
+    public string ClassName { get; set; }  // Nazwa klasy
+
+}
 
 
 

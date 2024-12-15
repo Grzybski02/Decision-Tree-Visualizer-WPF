@@ -17,6 +17,7 @@ public class NodeGraphManager
     private GViewer gViewer;
     private ObservableCollection<Node> Nodes;
     private WindowsFormsHost graphHost;
+    internal string selectedFormat;
 
     public void Initialize(ObservableCollection<Node> nodes, WindowsFormsHost host, GViewer viewer)
     {
@@ -26,12 +27,14 @@ public class NodeGraphManager
         gViewer.MouseDoubleClick += GViewer_MouseDoubleClick;
     }
 
-    public void RenderGraph(List<Node> nodeList)
+    public void RenderGraph(List<Node> nodeList, string format)
     {
         if (gViewer == null)
             throw new InvalidOperationException("GViewer is not initialized.");
 
         var grapher = new GrapherSKL();
+        grapher.selectedFormat = format;
+        selectedFormat = format;
         gViewer.Graph = grapher.RenderDecisionTree(nodeList).Graph;
         gViewer.Refresh();
     }
@@ -151,7 +154,10 @@ public class NodeGraphManager
     {
         if (gViewer == null || gViewer.Graph == null)
             return;
-        editedNode.Label = editedNode.Label + $"\n{editedNode.TestInfo}";
+
+        if (selectedFormat != "Graphviz")
+            editedNode.Label = editedNode.Label + $"\n{editedNode.TestInfo}";
+        
         var graphNode = gViewer.Graph.FindNode(editedNode.Id);
 
         if (graphNode != null)
