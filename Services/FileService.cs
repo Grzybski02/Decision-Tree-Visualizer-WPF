@@ -28,6 +28,11 @@ public class FileService
         return openFileDialog.ShowDialog() == DialogResult.OK ? openFileDialog.FileName : null;
     }
 
+    public List<(string FilePath, string Format)> GetRecentFiles()
+    {
+        return RecentFiles.ToList();
+    }
+
     public string ShowSaveFileDialog(string filter)
     {
         var saveFileDialog = new System.Windows.Forms.SaveFileDialog
@@ -80,6 +85,7 @@ public class FileService
         if (RecentFiles.Count > MaxRecentFiles)
             RecentFiles.RemoveAt(MaxRecentFiles);
 
-        RecentFilesUpdated?.Invoke(RecentFiles);
+        RecentFilesUpdated?.Invoke(GetRecentFiles());
     }
+
 }

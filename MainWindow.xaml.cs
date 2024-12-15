@@ -24,6 +24,23 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public List<string> ColorNames { get; set; }
     private GViewer gViewer;
 
+    public ObservableCollection<MenuItem> RecentFilesCollection { get; set; } = new ObservableCollection<MenuItem>();
+    private bool _isRecentFilesAvailable;
+    public bool IsRecentFilesAvailable
+    {
+        get => _isRecentFilesAvailable;
+        set
+        {
+            if (_isRecentFilesAvailable != value)
+            {
+                _isRecentFilesAvailable = value;
+                OnPropertyChanged(nameof(IsRecentFilesAvailable));
+            }
+        }
+    }
+
+
+
     private bool IsNodeGridVisible = true;
     private Visibility _nodeGridVisibility = Visibility.Visible;
     private Visibility _nodeGridSplitterVisibility = Visibility.Visible;
@@ -200,41 +217,45 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void UpdateRecentFilesMenu(List<(string FilePath, string Format)> recentFiles)
     {
-        RecentFilesMenu.Items.Clear();
+        RecentFilesCollection.Clear();
 
-        if (recentFiles.Count == 0)
+        if (recentFiles == null || recentFiles.Count == 0)
         {
-            RecentFilesMenu.Items.Add(new MenuItem { Header = "(None)", IsEnabled = false });
-            return;
+            RecentFilesCollection.Add(new MenuItem { Header = "(None)", IsEnabled = false });
+            IsRecentFilesAvailable = false;
         }
-
-        foreach (var (filePath, format) in recentFiles)
+        else
         {
-            var menuItem = new MenuItem
+            foreach (var (filePath, format) in recentFiles)
             {
-                Header = System.IO.Path.GetFileName(filePath),
-                ToolTip = $"{filePath} ({format})"
-            };
-            menuItem.Click += (sender, args) =>
-            {
-                var nodes = fileService.LoadFile(filePath, format);
-                if (nodes == null || nodes.Count == 0)
+                var menuItem = new MenuItem
                 {
-                    System.Windows.MessageBox.Show("No nodes found in the selected file.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
+                    Header = System.IO.Path.GetFileName(filePath),
+                    ToolTip = $"{filePath} ({format})",
+                    Command = new RelayCommand(() =>
+                    {
+                        var nodes = fileService.LoadFile(filePath, format);
+                        if (nodes == null || nodes.Count == 0)
+                        {
+                            MessageBox.Show("No nodes found in the selected file.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
 
-                Nodes.Clear();
-                foreach (var n in nodes)
-                {
-                    if (string.IsNullOrEmpty(n.ColorName))
-                        n.ColorName = "White";
-                    Nodes.Add(n);
-                }
+                        Nodes.Clear();
+                        foreach (var n in nodes)
+                        {
+                            if (string.IsNullOrEmpty(n.ColorName))
+                                n.ColorName = "White";
+                            Nodes.Add(n);
+                        }
 
-                nodeGraphManager.RenderGraph(Nodes.ToList());
-            };
-            RecentFilesMenu.Items.Add(menuItem);
+                        nodeGraphManager.RenderGraph(Nodes.ToList());
+                    })
+                };
+
+                RecentFilesCollection.Add(menuItem);
+            }
+            IsRecentFilesAvailable = true;
         }
     }
 

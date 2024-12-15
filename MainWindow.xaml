@@ -16,13 +16,19 @@
     </Window.InputBindings>
 
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
+        <Menu x:Name="MenuBar" DockPanel.Dock="Top">
             <MenuItem Header="File">
                 <MenuItem Header="Load Tree" InputGestureText="Ctrl+L" Click="LoadMenuItem_Click"/>
                 <MenuItem Header="Export" InputGestureText="Ctrl+S" Click="ExportJsonMenuItem_Click"/>
                 <Separator/>
-                <MenuItem Header="Recent Files">
-                    <MenuItem Name="RecentFilesMenu" Header="(None)" IsEnabled="False"/>
+                <MenuItem Header="Recent Files" ItemsSource="{Binding RecentFilesCollection}" IsEnabled="{Binding IsRecentFilesAvailable}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Header}" />
+                            <Setter Property="ToolTip" Value="{Binding ToolTip}" />
+                            <Setter Property="Command" Value="{Binding Command}" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
                 </MenuItem>
                 <Separator/>
                 <MenuItem Header="Close" Click="ExitMenuItem_Click"/>
