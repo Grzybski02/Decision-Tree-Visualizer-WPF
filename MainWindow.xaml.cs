@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows;
 using Decision_Trees_Visualizer.Services;
 using Microsoft.Msagl.GraphViewerGdi;
+using System.Windows.Media;
 
 namespace Decision_Trees_Visualizer;
 public partial class MainWindow : Window, INotifyPropertyChanged
@@ -64,7 +65,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         ToggleNodeGridCommand = new RelayCommand(() => ToggleNodeGridVisibility());
         AboutCommand = new RelayCommand(() => ShowAbout());
 
-        gViewer = new GViewer();
+        gViewer = new GViewer()
+        {
+            ToolBarIsVisible = false
+        };
         Nodes = new ObservableCollection<Node>();
         Nodes.CollectionChanged += nodeGraphManager.Nodes_CollectionChanged;
         nodeGraphManager.Initialize(Nodes, graphHost, gViewer); // Przekazujemy referencje do zarządzania grafem
@@ -88,9 +92,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         LoadTree();
     }
 
-    private void ExportJsonMenuItem_Click(object sender, RoutedEventArgs e)
+    private void ExportJSON_Click(object sender, RoutedEventArgs e)
     {
         ExportToJson();
+    }
+
+    private void ExportOther_Click(object sender, RoutedEventArgs e)
+    {
+        if (gViewer.Graph == null)
+        {
+            System.Windows.MessageBox.Show("No graph to export.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        gViewer.SaveButtonPressed();
     }
 
     private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
@@ -107,6 +121,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         ToggleNodeGridVisibility();
     }
+
+
 
     private void LoadTree()
     {
@@ -257,6 +273,113 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             }
             IsRecentFilesAvailable = true;
         }
+    }
+
+    private bool _isPanMode = false;
+    public bool IsPanMode
+    {
+        get => _isPanMode;
+        set
+        {
+            if (_isPanMode != value)
+            {
+                _isPanMode = value;
+                OnPropertyChanged(nameof(IsPanMode));
+            }
+        }
+    }
+
+    private bool _isRectangleZoomMode = false;
+    public bool IsRectangleZoomMode
+    {
+        get => _isRectangleZoomMode;
+        set
+        {
+            if (_isRectangleZoomMode != value)
+            {
+                _isRectangleZoomMode = value;
+                OnPropertyChanged(nameof(IsRectangleZoomMode));
+            }
+        }
+    }
+
+
+    private void ZoomIn_Click(object sender, RoutedEventArgs e)
+    {
+        gViewer.ZoomInPressed();
+    }
+
+    private void ZoomOut_Click(object sender, RoutedEventArgs e)
+    {
+        gViewer.ZoomOutPressed();
+    }
+
+    private void FitToScreen_Click(object sender, RoutedEventArgs e)
+    {
+        gViewer.WindowZoomButtonPressed = false;
+        gViewer.PanButtonPressed = false;
+        gViewer.Transform = null;
+        gViewer.Refresh();
+
+        // Resetuj stany ToggleButton
+        IsPanMode = false;
+        IsRectangleZoomMode = false;
+    }
+
+
+
+    private void Pan_Click(object sender, RoutedEventArgs e)
+    {
+        if (!IsPanMode)
+        {
+            gViewer.PanButtonPressed = false;
+            PanIcon.IsChecked = false;
+
+            IsPanMode = false;
+        }
+        else
+        {
+            gViewer.PanButtonPressed = true;
+            PanIcon.IsChecked = true;
+
+            gViewer.WindowZoomButtonPressed = false;
+            RectangleIcon.IsChecked = false;
+
+            IsPanMode = true;
+        }
+    }
+
+    private void Rectangle_Click(object sender, RoutedEventArgs e)
+    {
+        if (!IsRectangleZoomMode)
+        {
+            gViewer.WindowZoomButtonPressed = false;
+            RectangleIcon.IsChecked = false;
+
+            IsRectangleZoomMode = false;
+        }
+        else
+        {
+            gViewer.WindowZoomButtonPressed = true;
+            RectangleIcon.IsChecked = true;
+
+            gViewer.PanButtonPressed = false;
+            PanIcon.IsChecked = false;
+
+            IsRectangleZoomMode = true;
+        }
+    }
+
+
+
+    private void Undo_Click(object sender, RoutedEventArgs e)
+    {
+        gViewer.Undo();
+    }
+
+    private void Redo_Click(object sender, RoutedEventArgs e)
+    {
+        gViewer.Redo();
     }
 
 }

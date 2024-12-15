@@ -7,7 +7,24 @@
         xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
         xmlns:local="clr-namespace:Decision_Trees_Visualizer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Decision Trees Visualizer" Height="450" Width="800">
+
+    <Window.Resources>
+        <Style TargetType="ToolBar">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolBar">
+                        <DockPanel>
+                            <!-- ToolBarPanel obsługuje układ elementów w ToolBar -->
+                            <ToolBarPanel IsItemsHost="True" DockPanel.Dock="Top" />
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+
     <Window.InputBindings>
         <KeyBinding Key="L" Modifiers="Control" Command="{Binding LoadTreeCommand}"/>
         <KeyBinding Key="S" Modifiers="Control" Command="{Binding ExportTreeCommand}"/>
@@ -19,7 +36,10 @@
         <Menu x:Name="MenuBar" DockPanel.Dock="Top">
             <MenuItem Header="File">
                 <MenuItem Header="Load Tree" InputGestureText="Ctrl+L" Click="LoadMenuItem_Click"/>
-                <MenuItem Header="Export" InputGestureText="Ctrl+S" Click="ExportJsonMenuItem_Click"/>
+                <MenuItem Header="Export As">
+                    <MenuItem Header="JSON" Click="ExportJSON_Click" />
+                    <MenuItem Header="Other" Click="ExportOther_Click" />
+                </MenuItem>
                 <Separator/>
                 <MenuItem Header="Recent Files" ItemsSource="{Binding RecentFilesCollection}" IsEnabled="{Binding IsRecentFilesAvailable}">
                     <MenuItem.ItemContainerStyle>
@@ -40,6 +60,39 @@
                 <MenuItem Header="About" InputGestureText="Ctrl+H" Click="AboutMenuItem_Click"/>
             </MenuItem>
         </Menu>
+
+        <ToolBarTray DockPanel.Dock="Top" Background="White" Height="30">
+            <ToolBar Background="White" AllowDrop="False" IsOverflowOpen="False">
+                <Button Click="FitToScreen_Click" ToolBar.OverflowMode="Never">
+                    <Image Source="/Assets/Icons/home.png" Width="24" Height="24" />
+                    <Button.ToolTip>Reset view</Button.ToolTip>
+                </Button>
+                <Button Click="ZoomIn_Click" ToolBar.OverflowMode="Never">
+                    <Image Source="/Assets/Icons/zoom-in.png" Width="24" Height="24" />
+                    <Button.ToolTip>Zoom in</Button.ToolTip>
+                </Button>
+                <Button Click="ZoomOut_Click" ToolBar.OverflowMode="Never">
+                    <Image Source="/Assets/Icons/zoom-out.png" Width="24" Height="24" />
+                    <Button.ToolTip>Zoom out</Button.ToolTip>
+                </Button>
+                <ToggleButton x:Name="PanIcon" Click="Pan_Click" ToolBar.OverflowMode="Never" IsChecked="{Binding IsPanMode, Mode=TwoWay}">
+                    <Image Source="/Assets/Icons/compass.png" Width="24" Height="24" />
+                    <ToggleButton.ToolTip>Drag to pan</ToggleButton.ToolTip>
+                </ToggleButton>
+                <ToggleButton x:Name="RectangleIcon" Click="Rectangle_Click" ToolBar.OverflowMode="Never" IsChecked="{Binding IsRectangleZoomMode, Mode=TwoWay}">
+                    <Image Source="/Assets/Icons/checkbox-unchecked.png" Width="24" Height="24" />
+                    <ToggleButton.ToolTip>Draw a rectangle and zoom to it</ToggleButton.ToolTip>
+                </ToggleButton>
+                <Button Click="Undo_Click" ToolBar.OverflowMode="Never">
+                    <Image Source="/Assets/Icons/undo.png" Width="24" Height="24" />
+                    <Button.ToolTip>Undo layout editing</Button.ToolTip>
+                </Button>
+                <Button Click="Redo_Click" ToolBar.OverflowMode="Never">
+                    <Image Source="/Assets/Icons/redo.png" Width="24" Height="24" />
+                    <Button.ToolTip>Undo layout editing</Button.ToolTip>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
 
         <Grid>
             <Grid.ColumnDefinitions>

@@ -10,10 +10,37 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Icons\checkbox-unchecked.png" />
+    <None Remove="Assets\Icons\compass.png" />
+    <None Remove="Assets\Icons\home.png" />
+    <None Remove="Assets\Icons\redo.png" />
+    <None Remove="Assets\Icons\undo.png" />
+    <None Remove="Assets\Icons\zoom-in.png" />
+    <None Remove="Assets\Icons\zoom-out.png" />
+    <None Remove="checkbox-unchecked.png" />
+    <None Remove="compass.png" />
+    <None Remove="home.png" />
+    <None Remove="redo.png" />
+    <None Remove="undo.png" />
+    <None Remove="zoom-in.png" />
+    <None Remove="zoom-out.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Msagl" Version="1.1.6" />
     <PackageReference Include="Microsoft.Msagl.Drawing" Version="1.1.6" />
     <PackageReference Include="Microsoft.Msagl.GraphViewerGDI" Version="1.1.7" />
     <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Icons\checkbox-unchecked.png" />
+    <Resource Include="Assets\Icons\compass.png" />
+    <Resource Include="Assets\Icons\home.png" />
+    <Resource Include="Assets\Icons\redo.png" />
+    <Resource Include="Assets\Icons\undo.png" />
+    <Resource Include="Assets\Icons\zoom-in.png" />
+    <Resource Include="Assets\Icons\zoom-out.png" />
   </ItemGroup>
 
 </Project>
