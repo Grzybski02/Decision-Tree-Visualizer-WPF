@@ -7,21 +7,21 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="EditNodeWindow.xaml.cs">
+    <Compile Update="ViewModels\EditNodeWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="FormatSelectionDialog.xaml.cs">
+    <Compile Update="ViewModels\FormatSelectionDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="EditNodeWindow.xaml">
+    <Page Update="ViewModels\EditNodeWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="FormatSelectionDialog.xaml">
+    <Page Update="ViewModels\FormatSelectionDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="MainWindow.xaml">
+    <Page Update="ViewModels\MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

@@ -43,7 +43,7 @@
     <Resource Include="Assets\Icons\undo.png" />
     <Resource Include="Assets\Icons\zoom-in.png" />
     <Resource Include="Assets\Icons\zoom-out.png" />
-    <Resource Include="favicon.ico" />
+    <Resource Include="ViewModels\icon.ico" />
   </ItemGroup>
 
 </Project>
