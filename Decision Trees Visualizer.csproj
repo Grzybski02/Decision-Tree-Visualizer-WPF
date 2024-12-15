@@ -17,6 +17,7 @@
     <None Remove="Assets\Icons\undo.png" />
     <None Remove="Assets\Icons\zoom-in.png" />
     <None Remove="Assets\Icons\zoom-out.png" />
+	<None Remove="Assets\Icons\favicon.ico" />
     <None Remove="checkbox-unchecked.png" />
     <None Remove="compass.png" />
     <None Remove="home.png" />
@@ -24,6 +25,7 @@
     <None Remove="undo.png" />
     <None Remove="zoom-in.png" />
     <None Remove="zoom-out.png" />
+	<None Remove="favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +43,7 @@
     <Resource Include="Assets\Icons\undo.png" />
     <Resource Include="Assets\Icons\zoom-in.png" />
     <Resource Include="Assets\Icons\zoom-out.png" />
+    <Resource Include="favicon.ico" />
   </ItemGroup>
 
 </Project>

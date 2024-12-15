@@ -2,7 +2,6 @@
 using Microsoft.Msagl.GraphViewerGdi;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Windows.Shapes;
 
 namespace Decision_Trees_Visualizer;
 internal class GrapherSKL
@@ -360,7 +359,7 @@ internal class GrapherSKL
                         className = lines[3];
                     else if (node.OutEdges.Count() == 0 && match.Success)
                         className = match.Groups[1].Value;
-                    
+
                     break;
             }
 
