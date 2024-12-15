@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows;
 using Decision_Trees_Visualizer.Services;
+using Microsoft.Msagl.GraphViewerGdi;
 
 namespace Decision_Trees_Visualizer;
 public partial class MainWindow : Window, INotifyPropertyChanged
@@ -12,7 +13,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public ICommand ExportTreeCommand { get; }
     public ICommand ToggleNodeGridCommand { get; }
     public ICommand AboutCommand { get; }
-    public event PropertyChangedEventHandler PropertyChanged;
 
     private ObservableCollection<Node> Nodes { get; set; }
 
@@ -24,9 +24,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public List<string> ColorNames { get; set; }
     private GViewer gViewer;
 
-    private bool IsNodeGridVisible = false;
-    private Visibility _nodeGridVisibility = Visibility.Collapsed;
-    private Visibility _nodeGridSplitterVisibility = Visibility.Collapsed;
+    private bool IsNodeGridVisible = true;
+    private Visibility _nodeGridVisibility = Visibility.Visible;
+    private Visibility _nodeGridSplitterVisibility = Visibility.Visible;
 
     public MainWindow()
     {
@@ -50,10 +50,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         gViewer = new GViewer();
         Nodes = new ObservableCollection<Node>();
         Nodes.CollectionChanged += nodeGraphManager.Nodes_CollectionChanged;
-        nodeGraphManager.Initialize(Nodes, graphHost); // Przekazujemy referencje do zarządzania grafem
-
+        nodeGraphManager.Initialize(Nodes, graphHost, gViewer); // Przekazujemy referencje do zarządzania grafem
+        graphHost.Child = gViewer;
+        ToggleNodeGridVisibility();
         NodeGrid.ItemsSource = Nodes;
-
+        
         ColorNames = new ColorList().GetPredefinedColorNames();
         var colorColumn = NodeGrid.Columns.OfType<DataGridComboBoxColumn>().FirstOrDefault(c => c.Header.ToString() == "Color");
         if (colorColumn != null)
@@ -163,7 +164,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
-
     public Visibility NodeGridVisibility
     {
         get => _nodeGridVisibility;
@@ -190,10 +190,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     }
 
+    public event PropertyChangedEventHandler PropertyChanged;
+
     protected void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
 
     private void UpdateRecentFilesMenu(List<(string FilePath, string Format)> recentFiles)
     {
@@ -234,4 +237,5 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             RecentFilesMenu.Items.Add(menuItem);
         }
     }
+
 }
