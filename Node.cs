@@ -56,11 +56,8 @@ public class Node : INotifyPropertyChanged
     [JsonPropertyName("right_child")]
     public int? RightChildIndex { get; set; } // Indeks prawego dziecka w liście
 
-    [JsonPropertyName("left_edge_label")]
-    public string LeftEdgeLabel { get; set; } // Etykieta lewej krawędzi
-
-    [JsonPropertyName("right_edge_label")]
-    public string RightEdgeLabel { get; set; } // Etykieta prawej krawędzi
+    [JsonPropertyName("test_info")]
+    public string TestInfo { get; set; }
 
     public event PropertyChangedEventHandler PropertyChanged;
     protected virtual void OnPropertyChanged(string propertyName)

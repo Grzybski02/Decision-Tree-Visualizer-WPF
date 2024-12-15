@@ -151,8 +151,9 @@ public class NodeGraphManager
     {
         if (gViewer == null || gViewer.Graph == null)
             return;
-
+        editedNode.Label = editedNode.Label + $"\n{editedNode.TestInfo}";
         var graphNode = gViewer.Graph.FindNode(editedNode.Id);
+
         if (graphNode != null)
         {
             // Aktualizuj etykietę i kolor węzła

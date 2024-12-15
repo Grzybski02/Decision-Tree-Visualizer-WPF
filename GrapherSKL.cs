@@ -215,12 +215,11 @@ internal class GrapherSKL
             if (parentNode.LeftChildIndex == null)
             {
                 parentNode.LeftChildIndex = currentIndex;
-                parentNode.LeftEdgeLabel = condition;
+                parentNode.TestInfo = condition;
             }
             else if (parentNode.RightChildIndex == null)
             {
                 parentNode.RightChildIndex = currentIndex;
-                parentNode.RightEdgeLabel = condition;
             }
             else
             {
@@ -231,8 +230,6 @@ internal class GrapherSKL
         // Zaktualizuj bieżący poziom węzła
         levelIndexes[depth] = currentIndex;
     }
-
-
 
     private int CountDepth(string line)
     {
@@ -250,25 +247,28 @@ internal class GrapherSKL
         if (currentIndex < 0 || currentIndex >= nodes.Count) return;
 
         var currentNode = nodes[currentIndex];
-        graph.AddNode(currentNode.Id).LabelText = currentNode.Label;
+        var graphNode = graph.AddNode(currentNode.Id);
 
+        // Ustawianie etykiety węzła z informacją o nazwie i etykiecie lewej krawędzi
+        graphNode.LabelText = string.IsNullOrWhiteSpace(currentNode.TestInfo)
+            ? currentNode.Label
+            : $"{currentNode.Label}\n{currentNode.TestInfo}";
+
+
+        // Przejście do lewego dziecka
         if (currentNode.LeftChildIndex.HasValue)
         {
-            var leftEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.RightChildIndex.Value].Id);
-            leftEdge.LabelText = currentNode.RightEdgeLabel;
-            AddNodesToGraph(graph, nodes, currentNode.RightChildIndex.Value);
-        }
-
-        if (currentNode.RightChildIndex.HasValue)
-        {
-            var rightEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.LeftChildIndex.Value].Id);
-            rightEdge.LabelText = currentNode.LeftEdgeLabel;
+            var leftEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.LeftChildIndex.Value].Id);
             AddNodesToGraph(graph, nodes, currentNode.LeftChildIndex.Value);
         }
+
+        // Przejście do prawego dziecka
+        if (currentNode.RightChildIndex.HasValue)
+        {
+            var rightEdge = graph.AddEdge(currentNode.Id, nodes[currentNode.RightChildIndex.Value].Id);
+            AddNodesToGraph(graph, nodes, currentNode.RightChildIndex.Value);
+        }
     }
-
-
-
 
     public void ColourGraph(Graph graph, List<Node> nodes)
     {
@@ -323,14 +323,6 @@ internal class GrapherSKL
         }
     }
 
-
-
-
-
-
-
-
-
     public GViewer RenderDecisionTree(List<Node> Nodes)
     {
         Graph graph = new Graph("Decision Tree");
@@ -339,12 +331,6 @@ internal class GrapherSKL
         AddNodesToGraph(graph, Nodes, 0); // Startujemy od korzenia na indeksie 0
         ColourGraph(graph,Nodes);
 
-        // gviewer.ToolBarIsVisible = false;
         return new GViewer { Graph = graph };
     }
-
-
-
-
-
 }
