@@ -47,8 +47,7 @@
             <DataGrid Name="NodeGrid" Grid.Column="2" AutoGenerateColumns="False" 
                       CanUserSortColumns="True" CanUserResizeColumns="True" CanUserReorderColumns="True"
                       CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False"
-                      ItemsSource="{Binding Nodes, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                      CellEditEnding="NodeGrid_CellEditEnding">
+                      ItemsSource="{Binding Nodes, RelativeSource={RelativeSource AncestorType={x:Type Window}}}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Label" Binding="{Binding Label}" />
