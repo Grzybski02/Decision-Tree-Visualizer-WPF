@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Decision_Trees_Visualizer;
 
@@ -76,7 +70,7 @@ public class GraphvizNode : Node
 
     [JsonPropertyName("test")]
     public string Test { get; set; }       // Test decyzyjny (np. petal length <= 2.45)
-    
+
     [JsonPropertyName("gini")]
     public double Gini { get; set; }       // Wartość Gini
 

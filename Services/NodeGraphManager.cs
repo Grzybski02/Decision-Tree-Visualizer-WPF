@@ -1,13 +1,7 @@
 ﻿using Microsoft.Msagl.GraphViewerGdi;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 
@@ -155,9 +149,9 @@ public class NodeGraphManager
         if (gViewer == null || gViewer.Graph == null)
             return;
 
-        if (selectedFormat != "Graphviz")
+        if (selectedFormat != "Graphviz" && editedNode.TestInfo != null)
             editedNode.Label = editedNode.Label + $"\n{editedNode.TestInfo}";
-        
+
         var graphNode = gViewer.Graph.FindNode(editedNode.Id);
 
         if (graphNode != null)

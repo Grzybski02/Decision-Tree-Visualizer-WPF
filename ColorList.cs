@@ -1,9 +1,4 @@
 ﻿using Microsoft.Msagl.Drawing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Decision_Trees_Visualizer;
 internal class ColorList
@@ -19,9 +14,9 @@ internal class ColorList
     {
         return new List<string>
         {
-            "Aquamarine", "Beige","CadetBlue", "Coral","CornflowerBlue", 
-            "DarkCyan", "DarkGray", "DarkKhaki","DarkOliveGreen", 
-            "DarkRed", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise", "DimGray", "DodgerBlue", "Firebrick", 
+            "Aquamarine", "Beige","CadetBlue", "Coral","CornflowerBlue",
+            "DarkCyan", "DarkGray", "DarkKhaki","DarkOliveGreen",
+            "DarkRed", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise", "DimGray", "DodgerBlue", "Firebrick",
             "ForestGreen", "GreenYellow","HotPink",
             "LemonChiffon", "LightBlue", "LightGoldenrodYellow", "LightGreen", "LightPink",
             "LightSeaGreen", "LightSkyBlue", "LightSlateGray",

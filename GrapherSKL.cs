@@ -1,19 +1,7 @@
 ﻿using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
-using QuickGraph.Algorithms.Search;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Automation;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Shapes;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Decision_Trees_Visualizer;
 internal class GrapherSKL
@@ -69,15 +57,15 @@ internal class GrapherSKL
     }
 
     // Pomocnicze metody
-    private double ExtractDouble(string line) => double.Parse(Regex.Match(line, @"\d+\.\d+").Value.Replace('.',','));
+    private double ExtractDouble(string line) => double.Parse(Regex.Match(line, @"\d+\.\d+").Value.Replace('.', ','));
     private int ExtractInt(string line) => int.Parse(Regex.Match(line, @"\d+").Value);
     private List<int> ExtractValueList(string line)
     {
         return line
             .Split(new[] { '[', ']', ',' }, StringSplitOptions.RemoveEmptyEntries)
             .Skip(1)
-            .Select(x => x.Replace('.', ','))  
-            .Select(x => (int)double.Parse(x)) 
+            .Select(x => x.Replace('.', ','))
+            .Select(x => (int)double.Parse(x))
             .ToList();
     }
 
@@ -356,7 +344,7 @@ internal class GrapherSKL
             string className = null;
 
             // Sprawdzenie, czy węzeł jest liściem klasy
-            switch(selectedFormat)
+            switch (selectedFormat)
             {
                 case "Graphviz":
                     if (lines.Count() == 4)
@@ -378,7 +366,7 @@ internal class GrapherSKL
                     }
                     break;
             }
-   
+
             if (className != null)
             {
                 // Przypisanie koloru dla klasy
@@ -407,7 +395,7 @@ internal class GrapherSKL
                 // Opcjonalnie, ustaw kształt dla innych węzłów
                 node.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Box; // Możesz zmienić na inny kształt, jeśli chcesz
             }
-        }       
+        }
     }
 
     public GViewer RenderDecisionTree(List<Node> Nodes)
@@ -418,7 +406,7 @@ internal class GrapherSKL
             AddGraphvizNodesToGraph(graph, Nodes, 0); // Startujemy od korzenia na indeksie 0
         else
             AddNodesToGraph(graph, Nodes, 0); // Startujemy od korzenia na indeksie 0
-        ColourGraph(graph,Nodes);
+        ColourGraph(graph, Nodes);
 
         return new GViewer { Graph = graph };
     }

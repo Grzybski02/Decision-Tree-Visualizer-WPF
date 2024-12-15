@@ -1,11 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using Decision_Trees_Visualizer.Services;
+using Microsoft.Msagl.GraphViewerGdi;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows;
-using Decision_Trees_Visualizer.Services;
-using Microsoft.Msagl.GraphViewerGdi;
-using System.Windows.Media;
 
 namespace Decision_Trees_Visualizer;
 public partial class MainWindow : Window, INotifyPropertyChanged
@@ -77,7 +76,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         graphHost.Child = gViewer;
         ToggleNodeGridVisibility();
         NodeGrid.ItemsSource = Nodes;
-        
+
         ColorNames = new ColorList().GetPredefinedColorNames();
         var colorColumn = NodeGrid.Columns.OfType<DataGridComboBoxColumn>().FirstOrDefault(c => c.Header.ToString() == "Color");
         if (colorColumn != null)
@@ -147,7 +146,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 n.ColorName = "White";
             Nodes.Add(n);
         }
-        
+
         nodeGraphManager.RenderGraph(Nodes.ToList(), format);
 
         // Dodaj do ostatnich plików

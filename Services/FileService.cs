@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.IO;
 using System.Windows;
-using Microsoft.Win32;
+using System.Windows.Forms;
 
 namespace Decision_Trees_Visualizer.Services;
 public class FileService
@@ -23,7 +17,7 @@ public class FileService
             Filter = "All Supported Files (*.log;*.txt;*.json)|*.log;*.txt;*.json|Log files (*.log)|*.log|Text files (*.txt)|*.txt|JSON files (*.json)|*.json",
             InitialDirectory = Directory.GetCurrentDirectory()
         };
-        
+
 
         return openFileDialog.ShowDialog() == DialogResult.OK ? openFileDialog.FileName : null;
     }
