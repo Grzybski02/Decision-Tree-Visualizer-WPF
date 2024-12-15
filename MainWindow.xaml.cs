@@ -22,6 +22,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private TreeExporter treeExporter;
 
     public List<string> ColorNames { get; set; }
+    private GViewer gViewer;
 
     private bool IsNodeGridVisible = false;
     private Visibility _nodeGridVisibility = Visibility.Collapsed;
@@ -46,6 +47,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         ToggleNodeGridCommand = new RelayCommand(() => ToggleNodeGridVisibility());
         AboutCommand = new RelayCommand(() => ShowAbout());
 
+        gViewer = new GViewer();
         Nodes = new ObservableCollection<Node>();
         Nodes.CollectionChanged += nodeGraphManager.Nodes_CollectionChanged;
         nodeGraphManager.Initialize(Nodes, graphHost); // Przekazujemy referencje do zarządzania grafem

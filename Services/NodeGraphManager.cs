@@ -18,25 +18,22 @@ public class NodeGraphManager
     private ObservableCollection<Node> Nodes;
     private WindowsFormsHost graphHost;
 
-    public void Initialize(ObservableCollection<Node> nodes, WindowsFormsHost host)
+    public void Initialize(ObservableCollection<Node> nodes, WindowsFormsHost host, GViewer viewer)
     {
         Nodes = nodes;
         graphHost = host;
+        gViewer = viewer;
+        gViewer.MouseDoubleClick += GViewer_MouseDoubleClick;
     }
 
-    public void RenderGraph(System.Collections.Generic.List<Node> nodeList)
+    public void RenderGraph(List<Node> nodeList)
     {
         if (gViewer == null)
-        {
-            gViewer = new GViewer();
-            gViewer.MouseDoubleClick += GViewer_MouseDoubleClick;
-            graphHost.Child = gViewer;
-        }
+            throw new InvalidOperationException("GViewer is not initialized.");
 
-        // Załóżmy, że GrapherSKL posiada metodę RenderDecisionTree
         var grapher = new GrapherSKL();
-        gViewer = grapher.RenderDecisionTree(nodeList);
-        graphHost.Child = gViewer;
+        gViewer.Graph = grapher.RenderDecisionTree(nodeList).Graph;
+        gViewer.Refresh();
     }
 
     public void Nodes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -131,28 +128,55 @@ public class NodeGraphManager
             var correspondingNode = Nodes.FirstOrDefault(n => n.Id == nodeId);
             if (correspondingNode != null)
             {
-                // Znajdź główne okno (rzuć w górę VisualTree jeśli trzeba)
-                var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
-                if (mainWindow != null)
-                {
-                    mainWindow.NodeGrid.SelectedItem = correspondingNode;
-                    mainWindow.NodeGrid.ScrollIntoView(correspondingNode);
-                    EditNodeProperties(correspondingNode, mainWindow);
-                }
+                EditNodeProperties(correspondingNode);
             }
         }
     }
 
-    private void EditNodeProperties(Node node, MainWindow owner)
+    private void EditNodeProperties(Node node)
     {
         var editWindow = new EditNodeWindow(node, new ColorList().GetPredefinedColorNames());
-        editWindow.Owner = owner;
         var result = editWindow.ShowDialog();
 
         if (result == true)
         {
-            // Odśwież
-            owner.NodeGrid.Items.Refresh();
+            UpdateGraphAfterNodeEdit(node);
+
+            var graphNode = gViewer.Graph.FindNode(node.Id);
+            ResetNodeOutline(graphNode);
         }
     }
+
+    private void UpdateGraphAfterNodeEdit(Node editedNode)
+    {
+        if (gViewer == null || gViewer.Graph == null)
+            return;
+
+        var graphNode = gViewer.Graph.FindNode(editedNode.Id);
+        if (graphNode != null)
+        {
+            // Aktualizuj etykietę i kolor węzła
+            graphNode.LabelText = editedNode.Label;
+            if (editedNode.IsClassLeaf)
+            {
+                graphNode.Attr.FillColor = new ColorList().GetColorByName(editedNode.ColorName);
+            }
+
+            // Resetuj obrys
+            ResetNodeOutline(graphNode);
+        }
+
+        gViewer.Refresh();
+    }
+
+
+    private void ResetNodeOutline(Microsoft.Msagl.Drawing.Node graphNode)
+    {
+        if (graphNode == null) return;
+
+        graphNode.Attr.LineWidth = 1.0;
+
+        graphNode.Attr.Color = Microsoft.Msagl.Drawing.Color.Black;
+    }
+
 }
