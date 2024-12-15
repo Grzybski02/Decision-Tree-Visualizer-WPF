@@ -62,21 +62,45 @@ public partial class MainWindow : Window
         {
             0 => SelectFileWithExtension("Log files (*.log)|*.log"),
             1 => SelectFileWithExtension("Text files (*.txt)|*.txt"),
+            2 => SelectFileWithExtension("JSON files (*.json)|*.json"),
             _ => null
         };
 
         if (filePath == null) return;
 
-        var nodes = grapher.ParseTree(File.ReadAllLines(filePath), selectedFormat == 0 ? "Graphviz" : "MLPDT");
+        List<Node> nodes;
+        try
+        {
+            nodes = selectedFormat switch
+            {
+                0 => grapher.ParseTree(File.ReadAllLines(filePath), "Graphviz"),
+                1 => grapher.ParseTree(File.ReadAllLines(filePath), "MLPDT"),
+                2 => grapher.ParseTree(null, "JSON", filePath),
+                _ => new List<Node>()
+            };
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Error loading tree: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        if (nodes.Count == 0)
+        {
+            System.Windows.MessageBox.Show("No nodes found in the selected file.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
         Nodes.Clear();
         foreach (var node in nodes)
         {
-            node.ColorName = "White"; // Domyślny kolor dla wszystkich węzłów
+            if (string.IsNullOrEmpty(node.ColorName))
+                node.ColorName = "White"; // Default color if missing
             Nodes.Add(node);
         }
 
-        gViewer = grapher.RenderDecisionTree(nodes);
-        gViewer.MouseDoubleClick += GViewer_MouseDoubleClick; // Subscribe to the event
+        gViewer = grapher.RenderDecisionTree(Nodes.ToList());
+        gViewer.MouseDoubleClick += GViewer_MouseDoubleClick;
         graphHost.Child = gViewer;
     }
 
@@ -162,7 +186,7 @@ public partial class MainWindow : Window
         }
     }
 
-private void Nodes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void Nodes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
         if (e.NewItems != null)
         {
@@ -213,6 +237,49 @@ private void Nodes_CollectionChanged(object sender, NotifyCollectionChangedEvent
             gViewer.Refresh();
         }
     }
+
+    private void ExportJsonButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (Nodes == null || Nodes.Count == 0)
+        {
+            System.Windows.MessageBox.Show("No tree loaded to export.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        SaveFileDialog saveFileDialog = new SaveFileDialog
+        {
+            Filter = "JSON files (*.json)|*.json",
+            DefaultExt = "json",
+            AddExtension = true,
+            InitialDirectory = Directory.GetCurrentDirectory()
+        };
+
+        if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            ExportTreeToJson(Nodes.ToList(), saveFileDialog.FileName);
+        }
+    }
+
+    private void ExportTreeToJson(List<Node> nodes, string filePath)
+    {
+        try
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(nodes, new System.Text.Json.JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            File.WriteAllText(filePath, json);
+
+            System.Windows.MessageBox.Show("Tree successfully exported to JSON.", "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show($"Error exporting tree: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+
 
 
 }

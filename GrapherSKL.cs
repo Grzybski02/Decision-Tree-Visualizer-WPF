@@ -20,36 +20,99 @@ internal class GrapherSKL
     private readonly string nodeIdPrefix = "Node";
     private List<Color> colorPalette;
 
-    public List<Node> ParseTree(string[] logLines, string format)
+    public List<Node> ParseTree(string[] logLines, string format, string filePath = null)
     {
-        var nodes = new List<Node>(); // Globalna lista węzłów
-        var levelIndexes = new Dictionary<int, int>(); // Mapowanie poziomów drzewa na indeksy w liście
+        switch (format)
+        {
+            case "Graphviz":
+                return ParseGraphvizTree(logLines);
+            case "MLPDT":
+                return ParseMLPDTTree(logLines);
+            case "JSON":
+                if (filePath == null)
+                    throw new ArgumentException("File path is required for JSON format.");
+                return ParseJsonTree(filePath);
+            default:
+                throw new NotSupportedException($"Unsupported format: {format}");
+        }
+    }
 
+    private List<Node> ParseGraphvizTree(string[] logLines)
+    {
+        if (logLines == null || logLines.Length == 0)
+            throw new ArgumentException("Input file is empty or null.", nameof(logLines));
 
-        var newNode = new Node
+        var nodes = new List<Node>();
+        var levelIndexes = new Dictionary<int, int>();
+
+        // Tworzenie korzenia
+        var rootNode = new Node
         {
             Id = GetNextNodeId(),
-            Label = "Root"
+            Label = "Root",
+            Depth = 0
         };
 
-        AddNodeToTree(nodes, levelIndexes, 0, newNode, "test");
+        AddNodeToTree(nodes, levelIndexes, 0, rootNode, null);
 
         foreach (var line in logLines)
         {
             int depth = CountDepth(line);
             var trimmedLine = line.TrimStart('|').Trim();
-
-            if (format == "Graphviz")
-            {
-                AddGraphvizNode(nodes, levelIndexes, depth, trimmedLine);
-            }
-            else
-            {
-                AddMLPDTNode(nodes, levelIndexes, depth + 1, trimmedLine);
-            }
+            AddGraphvizNode(nodes, levelIndexes, depth, trimmedLine);
         }
 
-        return nodes; // Zwracamy całą listę węzłów
+        return nodes;
+    }
+
+
+    private List<Node> ParseMLPDTTree(string[] logLines)
+    {
+        if (logLines == null || logLines.Length == 0)
+            throw new ArgumentException("Input file is empty or null.", nameof(logLines));
+
+        var nodes = new List<Node>();
+        var levelIndexes = new Dictionary<int, int>();
+
+        // Tworzenie korzenia
+        var rootNode = new Node
+        {
+            Id = GetNextNodeId(),
+            Label = "Root",
+            Depth = 0 // Korzeń jest zawsze na poziomie 0
+        };
+
+        AddNodeToTree(nodes, levelIndexes, 0, rootNode, null); // Dodanie korzenia do drzewa
+
+        foreach (var line in logLines)
+        {
+            int depth = CountDepth(line); // Liczba "|", która określa poziom węzła
+            var trimmedLine = line.TrimStart('|').Trim();
+
+            AddMLPDTNode(nodes, levelIndexes, depth + 1, trimmedLine); // Przesunięcie o 1, bo korzeń to poziom 0
+        }
+
+        return nodes;
+    }
+
+    public List<Node> ParseJsonTree(string filePath)
+    {
+        try
+        {
+            var jsonContent = File.ReadAllText(filePath);
+            var nodes = System.Text.Json.JsonSerializer.Deserialize<List<Node>>(jsonContent);
+
+            if (nodes == null || nodes.Count == 0)
+            {
+                throw new InvalidOperationException("The JSON file is empty or has an invalid structure.");
+            }
+
+            return nodes;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Error parsing JSON tree: {ex.Message}", ex);
+        }
     }
 
     private void AddGraphvizNode(List<Node> nodes, Dictionary<int, int> levelIndexes, int depth, string trimmedLine)

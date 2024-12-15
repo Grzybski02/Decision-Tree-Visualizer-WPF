@@ -14,8 +14,10 @@
             <ComboBox Name="formatSelector" Width="200" Margin="5">
                 <ComboBoxItem>Python - Graphviz (.log)</ComboBoxItem>
                 <ComboBoxItem>MLPDT (.txt)</ComboBoxItem>
+                <ComboBoxItem>DTV (.json)</ComboBoxItem>
             </ComboBox>
             <Button Content="Choose tree" Name="loadButton" Click="LoadButton_Click" Width="150" Margin="5"/>
+            <Button Content="Export to JSON" Name="exportJsonButton" Click="ExportJsonButton_Click" Width="150" Margin="5" />
         </StackPanel>
 
         <Grid>
