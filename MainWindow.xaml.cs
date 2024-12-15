@@ -23,9 +23,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     public List<string> ColorNames { get; set; }
 
-    private bool IsNodeGridVisible = true;
-    private Visibility _nodeGridVisibility = Visibility.Visible;
-    private Visibility _nodeGridSplitterVisibility = Visibility.Visible;
+    private bool IsNodeGridVisible = false;
+    private Visibility _nodeGridVisibility = Visibility.Collapsed;
+    private Visibility _nodeGridSplitterVisibility = Visibility.Collapsed;
 
     public MainWindow()
     {
@@ -143,13 +143,24 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             NodeGridVisibility = Visibility.Collapsed;
             NodeGridSplitterVisibility = Visibility.Collapsed;
+
+            // Rozciągnij obszar wykresu
+            var grid = (Grid)graphHost.Parent;
+            grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
+            grid.ColumnDefinitions[2].Width = new GridLength(0);
         }
         else
         {
             NodeGridVisibility = Visibility.Visible;
             NodeGridSplitterVisibility = Visibility.Visible;
+
+            // Przywróć rozmiary
+            var grid = (Grid)graphHost.Parent;
+            grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
+            grid.ColumnDefinitions[2].Width = new GridLength(1, GridUnitType.Star);
         }
     }
+
 
     public Visibility NodeGridVisibility
     {
