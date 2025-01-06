@@ -447,9 +447,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     }
 
 
-    private void GViewer_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+    internal void GViewer_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
     {
+        if (gViewer.Graph == null) return;
+
         // Sprawdź, który obiekt został kliknięty
+
         var clickedObject = gViewer.GetObjectAt(e.Location);
 
         if (clickedObject is Microsoft.Msagl.GraphViewerGdi.DNode graphNode)

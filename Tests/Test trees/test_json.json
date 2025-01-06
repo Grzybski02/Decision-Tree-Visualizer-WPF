@@ -1,0 +1,172 @@
+[
+  {
+    "id": "Node1",
+    "Label": "x",
+    "ColorName": "White",
+    "is_leaf": false,
+    "depth": 0,
+    "left_child": 1,
+    "right_child": 12,
+    "test_info": "\u003C= 2.00836"
+  },
+  {
+    "id": "Node2",
+    "Label": "y",
+    "ColorName": "White",
+    "is_leaf": false,
+    "depth": 1,
+    "left_child": 2,
+    "right_child": 9,
+    "test_info": "\u003C= 2.01015"
+  },
+  {
+    "id": "Node3",
+    "Label": "y",
+    "ColorName": "White",
+    "is_leaf": false,
+    "depth": 2,
+    "left_child": 3,
+    "right_child": 6,
+    "test_info": "\u003C= 1.00089"
+  },
+  {
+    "id": "Node4",
+    "Label": "x ",
+    "ColorName": "White",
+    "is_leaf": false,
+    "depth": 3,
+    "left_child": 4,
+    "right_child": 5,
+    "test_info": "\u003C= 0.998413"
+  },
+  {
+    "id": "Node5",
+    "Label": "0 (A) (10983/10)",
+    "ColorName": "YellowGreen",
+    "is_leaf": true,
+    "depth": 4,
+    "left_child": null,
+    "right_child": null,
+    "test_info": null
+  },
+  {
+    "id": "Node6",
+    "Label": "1 (B) (11239/120)",
+    "ColorName": "Tan",
+    "is_leaf": true,
+    "depth": 4,
+    "left_child": null,
+    "right_child": null,
+    "test_info": null
+  },
+  {
+    "id": "Node7",
+    "Label": "x ",
+    "ColorName": "White",
+    "is_leaf": false,
+    "depth": 3,
+    "left_child": 7,
+    "right_child": 8,
+    "test_info": "\u003C= 0.998413"
+  },
+  {
+    "id": "Node8",
+    "Label": "1 (B) (11244/125)",
+    "ColorName": "Tan",
+    "is_leaf": true,
+    "depth": 4,
+    "left_child": null,
+    "right_child": null,
+    "test_info": null
+  },
+  {
+    "id": "Node9",
+    "Label": "0 (A) (11467/201)",
+    "ColorName": "YellowGreen",
+    "is_leaf": true,
+    "depth": 4,
+    "left_child": null,
+    "right_child": null,
+    "test_info": null
+  },
+  {
+    "id": "Node10",
+    "Label": "x ",
+    "ColorName": "White",
+    "is_leaf": false,
+    "depth": 2,
+    "left_child": 10,
+    "right_child": 11,
+    "test_info": "\u003C= 0.998413"
+  },
+  {
+    "id": "Node11",
+    "Label": "0 (A) (10912/0)",
+    "ColorName": "YellowGreen",
+    "is_leaf": true,
+    "depth": 3,
+    "left_child": null,
+    "right_child": null,
+    "test_info": null
+  },
+  {
+    "id": "Node12",
+    "Label": "1 (B) (11094/110)",
+    "ColorName": "Tan",
+    "is_leaf": true,
+    "depth": 3,
+    "left_child": null,
+    "right_child": null,
+    "test_info": null
+  },
+  {
+    "id": "Node13",
+    "Label": "y",
+    "ColorName": "White",
+    "is_leaf": false,
+    "depth": 1,
+    "left_child": 13,
+    "right_child": 16,
+    "test_info": "\u003C= 1.9998"
+  },
+  {
+    "id": "Node14",
+    "Label": "y ",
+    "ColorName": "White",
+    "is_leaf": false,
+    "depth": 2,
+    "left_child": 14,
+    "right_child": 15,
+    "test_info": "\u003C= 1.00089"
+  },
+  {
+    "id": "Node15",
+    "Label": "0 (A) (10944/12)",
+    "ColorName": "YellowGreen",
+    "is_leaf": true,
+    "depth": 3,
+    "left_child": null,
+    "right_child": null,
+    "test_info": null
+  },
+  {
+    "id": "Node16",
+    "Label": "1 (B) (11161/0)",
+    "ColorName": "Tan",
+    "is_leaf": true,
+    "depth": 3,
+    "left_child": null,
+    "right_child": null,
+    "test_info": null
+  },
+  {
+    "id": "Node17",
+    "Label": "0 (A) (10956/3)",
+    "ColorName": "YellowGreen",
+    "is_leaf": true,
+    "depth": 2,
+    "left_child": null,
+    "right_child": null,
+    "test_info": null
+  }
+]
