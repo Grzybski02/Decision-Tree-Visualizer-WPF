@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:Decision_Trees_Visualizer"
         mc:Ignorable="d"
         Title="Decision Trees Visualizer" Height="450" Width="800"
-        Icon="icon.ico">
+        Icon="/Assets/Icons/icon.ico">
 
     <Window.Resources>
         <Style TargetType="ToolBar">
