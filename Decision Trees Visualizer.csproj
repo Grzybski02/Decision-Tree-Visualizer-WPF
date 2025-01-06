@@ -7,9 +7,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	<PublishSingleFile>true</PublishSingleFile>
-	<ApplicationIcon>ViewModels\icon.ico</ApplicationIcon>
+    <ApplicationIcon>hierarchy-management-icon-_1_.ico</ApplicationIcon>
+    <StartupObject>Decision_Trees_Visualizer.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,29 +19,10 @@
     <None Remove="Assets\Icons\undo.png" />
     <None Remove="Assets\Icons\zoom-in.png" />
     <None Remove="Assets\Icons\zoom-out.png" />
-	<None Remove="Assets\Icons\icon.ico" />
-    <None Remove="checkbox-unchecked.png" />
-    <None Remove="compass.png" />
-    <None Remove="home.png" />
-    <None Remove="redo.png" />
-    <None Remove="undo.png" />
-    <None Remove="zoom-in.png" />
-    <None Remove="zoom-out.png" />
-	<None Remove="icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="ViewModels\icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Msagl" Version="1.1.6" />
-    <PackageReference Include="Microsoft.Msagl.Drawing" Version="1.1.6" />
-    <PackageReference Include="Microsoft.Msagl.GraphViewerGDI" Version="1.1.7" />
-    <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <Content Include="hierarchy-management-icon-_1_.ico" />
     <Resource Include="Assets\Icons\checkbox-unchecked.png" />
     <Resource Include="Assets\Icons\compass.png" />
     <Resource Include="Assets\Icons\home.png" />
@@ -50,7 +30,18 @@
     <Resource Include="Assets\Icons\undo.png" />
     <Resource Include="Assets\Icons\zoom-in.png" />
     <Resource Include="Assets\Icons\zoom-out.png" />
-    <Resource Include="ViewModels\icon.ico" />
+    <Resource Include="Assets\Icons\icon.ico" />
   </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Msagl" Version="1.1.6" />
+    <PackageReference Include="Microsoft.Msagl.Drawing" Version="1.1.6" />
+    <PackageReference Include="Microsoft.Msagl.GraphViewerGDI" Version="1.1.7" />
+    <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.0" />
+    <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+  </ItemGroup>
+
 
 </Project>

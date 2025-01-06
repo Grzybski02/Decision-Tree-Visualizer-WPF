@@ -2,9 +2,11 @@
 using Microsoft.Msagl.GraphViewerGdi;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace Decision_Trees_Visualizer;
@@ -182,7 +184,46 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ShowAbout()
     {
-        System.Windows.MessageBox.Show("Decision Trees Visualizer\nVersion 0.8 (15/12/2024)\nAuthor: Jacek Grzybowski", "About");
+        // Create a StackPanel to hold the text and link
+        StackPanel panel = new StackPanel
+        {
+            Margin = new Thickness(10)
+        };
+
+        TextBox textBox = new TextBox
+        {
+            Text = "Decision Trees Visualizer is a simple application for visualizing decision trees. It supports loading trees from Graphviz, MLPDT and JSON formats. The application allows you to edit node properties, export the tree to JSON, and save the graph to various formats." +
+            "\n\nVersion 1.0 (06/01/2025)\nAuthor: Jacek Grzybowski, Bialystok University of Technology, Faculty of Computer Science" +
+            "\nPolitechnika Białostocka, Wydział Informatyki",
+            TextWrapping = TextWrapping.Wrap,
+            IsReadOnly = true,
+            BorderThickness = new Thickness(0)
+        };
+
+
+        TextBox emailTextBox = new TextBox
+        {
+            Text = "Contact: jacek.grzybowski.110920@student.pb.edu.pl",
+            IsReadOnly = true,
+            BorderThickness = new Thickness(0),
+            Background = null,
+            Padding = new Thickness(0),
+        };
+
+        // Add message and link to panel
+        panel.Children.Add(textBox);
+        panel.Children.Add(emailTextBox);
+
+        // Show the panel in a MessageBox-like dialog
+        Window aboutWindow = new Window
+        {
+            Title = "About",
+            Content = panel,
+            SizeToContent = SizeToContent.WidthAndHeight,
+            ResizeMode = ResizeMode.CanResizeWithGrip,
+            WindowStartupLocation = WindowStartupLocation.CenterScreen
+        };
+        aboutWindow.ShowDialog();
     }
 
     private void ToggleNodeGridVisibility()
@@ -468,6 +509,4 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             gViewer.Refresh();
         }
     }
-
-
 }

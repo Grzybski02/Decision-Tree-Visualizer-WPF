@@ -45,7 +45,7 @@ internal class ColorList
             return Color.PaleTurquoise;
         }
     }
-
+    
     public (Color color, string colorName) GetColorForClass(string className)
     {
         int hash = className.GetHashCode();

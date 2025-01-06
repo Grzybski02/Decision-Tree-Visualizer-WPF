@@ -9,7 +9,6 @@ internal class GrapherSKL
     private int nodeCounter = 0;
     internal string selectedFormat;
     private readonly string nodeIdPrefix = "Node";
-    private List<Color> colorPalette;
 
     public List<Node> ParseTree(string[] logLines, string format, string filePath = null)
     {
